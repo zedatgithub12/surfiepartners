@@ -6,7 +6,12 @@ const customers = [
         email: "yoseftesfaye@gmail.com",
         phone: "094953254",
         date: "01/02/2024",
-
+        duedate: "01/04/2024",
+        license: "5",
+        subscription: "monthly",
+        address: "Addis Ababa",
+        payment_method: "Chapa",
+        status: "1",
     },
     {
         id: "02",
@@ -15,7 +20,12 @@ const customers = [
         email: "yoseftesfaye@gmail.com",
         phone: "094953254",
         date: "01/02/2024",
-
+        duedate: "01/04/2024",
+        license: "5",
+        subscription: "monthly",
+        address: "Addis Ababa",
+        payment_method: "Chapa",
+        status: "1",
     },
     {
         id: "03",
@@ -24,6 +34,12 @@ const customers = [
         email: "yoseftesfaye@gmail.com",
         phone: "094953254",
         date: "01/02/2024",
+        duedate: "01/04/2024",
+        license: "5",
+        subscription: "monthly",
+        address: "Addis Ababa",
+        payment_method: "Chapa",
+        status: "1",
 
     },
     {
@@ -33,7 +49,12 @@ const customers = [
         email: "yoseftesfaye@gmail.com",
         phone: "094953254",
         date: "01/02/2024",
-
+        duedate: "01/04/2024",
+        license: "5",
+        subscription: "monthly",
+        address: "Addis Ababa",
+        payment_method: "Chapa",
+        status: "1",
     },
     {
         id: "05",
@@ -42,7 +63,12 @@ const customers = [
         email: "yoseftesfaye@gmail.com",
         phone: "094953254",
         date: "01/02/2024",
-
+        duedate: "01/04/2024",
+        license: "5",
+        subscription: "monthly",
+        address: "Addis Ababa",
+        payment_method: "Chapa",
+        status: "1",
     },
 ];
 

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
-import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
 import { FaWallet } from "react-icons/fa";
-import { IoIosPeople, IoIosCopy } from "react-icons/io";
+import { IoIosPeople, IoIosCopy, IoMdClose } from "react-icons/io";
 import Withdrwals from "../data/withdrawals";
 import ListItemButton from "@mui/material/ListItemButton";
 import { FiChevronRight } from "react-icons/fi";
@@ -13,13 +13,17 @@ import Header from "../components/header";
 import ReactPaginate from "react-paginate";
 import Dropdown from "react-bootstrap/Dropdown";
 import { GrFormClose } from "react-icons/gr";
+import Button from "@mui/material/Button";
+import Snackbar from "@mui/material/Snackbar";
 
 function Home() {
-
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [paging, setPaging] = useState([]);
   const [withmodal, setWithModal] = useState(false);
   const [pmodal, setPModal] = useState("Telebirr");
+  const [open, setOpen] = React.useState(false);
+  const [pdetail, setPdetail] = useState(false);
+  const [detail, setDetail] = React.useState([]);
   const [withdrawal, setWithdrawal] = useState({
     amount: "",
     amountbc: false,
@@ -30,112 +34,163 @@ function Home() {
     accountht: "",
   });
 
-  const updateAmount =(event)=>{
-    setWithdrawal({
-        ...withdrawal,
-        amount: event.target.value,
-        amountbc: false,
-        amountht: "",
-    })
+  const Withdrawals = Withdrwals.slice(0, 3);
+
+  const handleClick = () => {
+    setOpen(true);
   };
-  const updateAccount =(event)=>{
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+  const updateAmount = (event) => {
     setWithdrawal({
-        ...withdrawal,
-        account: event.target.value,
-        accountbc: false,
-        accountht: "",
-    })
+      ...withdrawal,
+      amount: event.target.value,
+      amountbc: false,
+      amountht: "",
+    });
+  };
+  const updateAccount = (event) => {
+    setWithdrawal({
+      ...withdrawal,
+      account: event.target.value,
+      accountbc: false,
+      accountht: "",
+    });
   };
 
-  const ConfirmPayout =()=>{
-  if(withdrawal.amount === ""){
-    setWithdrawal({
+  const Status = (status) => {
+    var Status;
+
+    switch (status) {
+      case "1":
+        Status = "Active";
+        break;
+      case "2":
+        Status = "Expired";
+        break;
+
+      case "3":
+        Status = "Terminated";
+        break;
+      default:
+        Status = "Pending";
+    }
+
+    return Status;
+  };
+  const WithDetail = (item) => {
+    setDetail(item);
+    setPdetail(true);
+  };
+  const copyToClipboard = (text) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => handleClick())
+      .catch((err) => console.error("Could not copy text: ", err));
+  };
+
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <IoMdClose fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
+  const ConfirmPayout = () => {
+    if (withdrawal.amount === "") {
+      setWithdrawal({
         ...withdrawal,
-   
+
         amountbc: true,
         amountht: "Please Enter Amount",
-    });
-    document.getElementById('amount').focus();
-  }
-  else if(withdrawal.account === ""){
-    setWithdrawal({
+      });
+      document.getElementById("amount").focus();
+    } else if (withdrawal.account === "") {
+      setWithdrawal({
         ...withdrawal,
-      
+
         accountbc: true,
         accountht: "Please Enter Account Number ",
-    });
-    document.getElementById('account').focus();
-  }
-  else {
+      });
+      document.getElementById("account").focus();
+    } else {
       alert("all is well");
-  }
-  }
+    }
+  };
   return (
     <>
       <Header />
       <Container>
-        <Row className="pt-4 ps-0">
-          <Col
-            sm={3}
-            className="p-3 m-4  bg-light rounded-3 text-center shadow-sm  "
-          >
-            <p className="fs-1 fw-semibold money-color ">
-              2445<sup>ETB</sup>
-            </p>
-            <div className="d-flex justify-content-center align-items-center mt-4 ">
-              <FaWallet size={28} className="money-color" />{" "}
-              <p className="fw-semibold fs-5 mt-2 ms-3">Current Balance</p>
+        <Row className="px-4 mb-1 mt-4 pt-4">
+          <Col>
+            <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
+              <div>
+                <small>Current Balance</small> <br />
+                <span className="fs-4 fw-semibold text-dark money-color">
+                  2445 <sup>ETB</sup>
+                </span>
+              </div>
+              <FaWallet size={28} className="money-color" />
             </div>
           </Col>
 
-          <Col
-            sm={3}
-            className="p-3 m-4 bg-light rounded-3 text-center shadow-sm"
-          >
-            <p className="fs-1 fw-semibold text-primary">108</p>
-            <div className="d-flex justify-content-center align-items-center mt-4">
+          <Col>
+            <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
+              <div>
+                <small>Referred Customers</small> <br />
+                <span className="fs-4 fw-semibold text-dark">108</span>
+              </div>
               <IoIosPeople size={32} className="text-primary" />
-              <p className="fw-semibold fs-5 mt-2 ms-3">Referred Customers</p>
             </div>
           </Col>
-
-          <Col sm={3} className=" m-4 ">
-            <div className="d-flex justify-content-between align-items-center p-3  mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
+          <Col>
+            <div className="d-flex justify-content-between align-items-center p-3 border  mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
               <div>
                 <small>Referral code</small> <br />
                 <span className="fs-4 fw-semibold text-dark">DFCTYN12</span>
               </div>
-              <IconButton aria-label="delete">
+              <IconButton
+                aria-label="delete"
+                onClick={() => copyToClipboard("DFCTYN12")}
+              >
                 <IoIosCopy size={30} />
               </IconButton>
             </div>
-            <NavLink
-              to="/account"
-              className="btn btn-primary form-control mt-3"
-            >
-              Create Account
-            </NavLink>
-            <br />
           </Col>
         </Row>
 
-        <Row className="mt-3">
-          <Col sm={9}>
-            <div className="d-flex justify-content-between ">
-              <p className="text-muted fw-semibold fs-5 ms-4 ps-2">
-                Withdrawals
-              </p>
-              <NavLink
-                onClick={() => setWithModal(true)}
-                className="money-color my-auto fw-semibold"
-              >
-                Request Withdrawal
-              </NavLink>
-            </div>
-            {Withdrwals.map((item, index) => (
+        <Row className="mt-3 mb-3 pb-3">
+          <Col sm={8}>
+          
+            {Withdrawals.length > 0 ?
+            (
+            <>
+                        <div className="d-flex justify-content-between ">
+            <p className="text-muted fw-semibold fs-5 ms-4 ps-2">
+              Withdrawals
+            </p>
+            <NavLink
+              onClick={() => setWithModal(true)}
+              className="money-color my-auto fw-semibold"
+            >
+              Request Withdrawal
+            </NavLink>
+          </div> 
+              { Withdrawals.map((item, index) => (
               <ListItemButton
                 key={index}
                 className="d-flex justify-content-between align-items-center ms-4 ps-4 bg-light my-1 px-2 rounded py-2"
+                onClick={() => WithDetail(item)}
               >
                 <p className="fw-semibold text-muted  my-auto">{item.date}</p>
                 <div className="d-flex justify-content-center align-items-center ">
@@ -146,52 +201,70 @@ function Home() {
                   />
                 </div>
               </ListItemButton>
-            ))}
+            
+            ))} </>): null}
 
-            <NavLink to="./withdrawals" className=" ms-4 ps-2">See more</NavLink>
-          </Col>
-        </Row>
+            {Withdrwals.length > 3 ?
+            <NavLink to="/withdrawals" className=" ms-4 ps-2">
+              See more
+            </NavLink>: null}
 
-        <Row>
-          <Col sm={9}>
             <p className="text-muted fw-semibold fs-5 ms-3 ps-3 mt-4">
               Referred Customers
             </p>
-            <table className="table ms-4 ps-2 table-hover">
-              <thead className="bg-light  p-2">
+            <table className="table  px-2 mx-3 table-hover">
+              <thead className="bg-light">
                 <tr>
-                  <th scope="col" className="rounded text-muted fw-semibold ">
-                    Name
-                  </th>
-                  <th
-                    scope="col"
-                    className="rounded text-muted fw-semibold border-start"
-                  >
+                  <th className="rounded text-muted fw-semibold ">Name</th>
+                  <th className="rounded text-muted fw-semibold border-start">
                     Email
                   </th>
-                  <th
-                    scope="col"
-                    className="rounded text-muted fw-semibold border-start"
-                  >
+                  <th className="rounded text-muted fw-semibold border-start">
                     Phone
                   </th>
-                  <th
-                    scope="col"
-                    className="rounded text-muted fw-semibold border-start"
-                  >
+                  <th className="rounded text-muted fw-semibold border-start">
                     Date
+                  </th>
+                  <th className="rounded text-muted fw-semibold border-start">
+                    Status
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {customers.map((item, index) => (
-                  <tr key={index} onClick={()=> navigate("./customerdetails")}>
+                  <tr
+                    key={index}
+                    onClick={() =>
+                      navigate("/customerdetails", {
+                        state: { ...item },
+                      })
+                    }
+                  >
                     <td>
                       {item.fname} {item.mname}
                     </td>
                     <td>{item.email}</td>
                     <td>{item.phone}</td>
                     <td>{item.date}</td>
+                    <td>
+                      {item.status === "1" ? (
+                        <span class="bg-success  bg-opacity-10 text-success pe-1 px-2 rounded-1">
+                          {Status(item.status)}
+                        </span>
+                      ) : item.status === "2" ? (
+                        <span class="badge bg-danger bg-opacity-10 text-danger pe-1 rounded-1">
+                          {Status(item.status)}
+                        </span>
+                      ) : item.status === "3" ? (
+                        <span class="badge bg-dark bg-opacity-10 text-dark pe-1 rounded-1">
+                          {Status(item.status)}
+                        </span>
+                      ) : (
+                        <span class="badge bg-secondary bg-opacity-10 text-secondary pe-1 rounded-1">
+                          {Status(item.status)}
+                        </span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -218,89 +291,136 @@ function Home() {
               activeClassName={"active"}
             />
           </Col>
+
+          <Col sm={4}>
+            <NavLink to="/account" className="btn btn-primary px-5 mt-3 mb-2">
+              Create Account
+            </NavLink>
+<br/>
+            {Withdrwals.length == 0 ? 
+         <NavLink
+         onClick={() => setWithModal(true)}
+         className="money-color my-auto fw-semibold mt-2 pt-2"
+       >
+         Request Withdrawal
+       </NavLink>: null}
+
+            {pdetail ? (
+              <div className="bg-white shadow-sm rounded p-3 my-3 border">
+                <p className="fw-semibold fs-6">Payment Details</p>
+                <div className="d-flex justify-content-between align-items-center ">
+                  <p className="">Requested Date</p>{" "}
+                  <p className="fw-semibold text-muted">{detail.date}</p>
+                </div>
+                <div className="d-flex justify-content-between align-items-center ">
+                  <p>Amount</p>{" "}
+                  <p className="fw-semibold text-muted">{detail.amount}</p>
+                </div>
+                <div className="d-flex justify-content-between align-items-center ">
+                  <p>Payment Channel</p>{" "}
+                  <p className="fw-semibold text-muted">{detail.channel}</p>
+                </div>
+                <div className="d-flex justify-content-between align-items-center ">
+                  <p>Account Number</p>{" "}
+                  <p className="fw-semibold text-muted">{detail.accountNo}</p>
+                </div>
+                <div className="d-flex justify-content-between align-items-center ">
+                  <p>Proccessed Date</p>{" "}
+                  <p className="fw-semibold text-muted">{detail.pdate}</p>
+                </div>
+              </div>
+            ) : null}
+
+            {withmodal ? (
+              <div className=" shadow-sm border rounded  p-3  mb-5">
+                <button
+                  onClick={() => setWithModal(false)}
+                  className="bg-light bg-opacity-25 fw-bold p-3 py-1 rounded float-end position-absolute top-0 end-0 m-2"
+                >
+                  <GrFormClose size={26} className="text-danger" />
+                </button>
+                <p className="fw-semibold fs-5 mt-1 ms-3 mb-4 text-muted ">
+                  Withdrawal Information
+                </p>
+                <input
+                  type="text"
+                  id="amount"
+                  className={
+                    withdrawal.amountbc
+                      ? "form-control mt-4 border-danger w-75 ms-3"
+                      : "form-control mt-4 w-75 ms-3"
+                  }
+                  placeholder="Amount"
+                  aria-label="Amount"
+                  value={withdrawal.amount}
+                  onChange={updateAmount}
+                />
+                <small class="form-text  text-danger ms-3">
+                  {withdrawal.amountht}
+                </small>
+                <Dropdown className="m-3 ms-0  w-75 ms-3">
+                  <Dropdown.Toggle
+                    id="dropdown-button-dark-example1"
+                    variant="secondary"
+                  >
+                    {pmodal}
+                  </Dropdown.Toggle>
+
+                  <Dropdown.Menu variant="light">
+                    <Dropdown.Item onClick={() => setPModal("Telebirr")} active>
+                      Telebirr
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => setPModal("Chapa")}>
+                      Chapa
+                    </Dropdown.Item>
+                    <Dropdown.Item onClick={() => setPModal("CBE Birr")}>
+                      CBE Birr
+                    </Dropdown.Item>
+
+                    <Dropdown.Item onClick={() => setPModal("CBE Account")}>
+                      CBE Account
+                    </Dropdown.Item>
+                  </Dropdown.Menu>
+                </Dropdown>
+                <input
+                  type="text"
+                  id="account"
+                  className={
+                    withdrawal.amountbc
+                      ? "form-control mt-3 border-danger  w-75 ms-3"
+                      : "form-control mt-3  w-75 ms-3"
+                  }
+                  placeholder="Account No"
+                  aria-label="Account No"
+                  value={withdrawal.account}
+                  onChange={updateAccount}
+                />
+                <small class="form-text  text-danger ps-3 ">
+                  {withdrawal.accountht}
+                </small>
+                <button
+                  type="button"
+                  className="btn btn-primary mt-4 form-control  w-75 ms-3 mb-3"
+                  onClick={() => ConfirmPayout()}
+                >
+                  Confirm
+                </button>
+                <br />
+                <p class="form-text  text-muted mx-3 mt-1  px-4 caption">
+                  Your user Information will be used to process the payment Make
+                  sure you have provided account information of yourself
+                </p>
+              </div>
+            ) : null}
+          </Col>
         </Row>
-
-        {withmodal ? (
-          <div className="position-fixed end-0 bottom-0 bg-secondary bg-opacity-10 shadow rounded m-2 me-3 p-3 w-25 mb-5">
-            <button
-              onClick={() => setWithModal(false)}
-              className="bg-light bg-opacity-25 fw-bold p-3 py-1 rounded float-end position-absolute top-0 end-0 m-2"
-            >
-              <GrFormClose size={26} className="text-danger" />
-            </button>
-            <p className="fw-semibold fs-5 mt-1 ms-3 mb-4 text-muted ">
-              Withdrawal Information
-            </p>
-            <input
-              type="text"
-              id="amount"
-              className={
-                withdrawal.amountbc
-                  ? "form-control mt-4 border-danger w-75 ms-3"
-                  : "form-control mt-4 w-75 ms-3"
-              }
-              placeholder="Amount"
-              aria-label="Amount"
-              value={withdrawal.amount}
-              onChange={updateAmount}
-            />
-            <small class="form-text  text-danger ms-3">
-              {withdrawal.amountht}
-            </small>
-            <Dropdown className="m-3 ms-0  w-75 ms-3">
-              <Dropdown.Toggle
-                id="dropdown-button-dark-example1"
-                variant="secondary"
-              >
-                {pmodal}
-              </Dropdown.Toggle>
-
-              <Dropdown.Menu variant="light">
-                <Dropdown.Item onClick={() => setPModal("Telebirr")} active>
-                  Telebirr
-                </Dropdown.Item>
-                <Dropdown.Item onClick={() => setPModal("Chapa")}>
-                  Chapa
-                </Dropdown.Item>
-                <Dropdown.Item onClick={() => setPModal("CBE Birr")}>
-                  CBE Birr
-                </Dropdown.Item>
-
-                <Dropdown.Item onClick={() => setPModal("CBE Account")}>
-                  CBE Account
-                </Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
-            <input
-              type="text"
-              id="account"
-              className={
-                withdrawal.amountbc
-                  ? "form-control mt-3 border-danger  w-75 ms-3"
-                  : "form-control mt-3  w-75 ms-3"
-              }
-              placeholder="Account No"
-              aria-label="Account No"
-              value={withdrawal.account}
-              onChange={updateAccount}
-            />
-             <small class="form-text  text-danger ps-3 ">
-              {withdrawal.accountht}
-            </small>
-            <button
-              type="button"
-              className="btn btn-primary mt-4 form-control  w-75 ms-3 mb-3"
-              onClick={() => ConfirmPayout()}
-            >
-              Confirm
-            </button>{" "}
-            <br />
-            <p class="form-text  text-muted mx-3 mt-1  px-4 caption">
-              Your user Information will be used to process the payment
-              Make sure you have provided account information of yourself
-            </p>
-          </div>
-        ) : null}
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={handleClose}
+          message="Copied to Clipboard!"
+          action={action}
+        />
       </Container>
 
       <Container fluid className="text-center ">
