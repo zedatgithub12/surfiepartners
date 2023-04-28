@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import Header from "../components/header";
@@ -7,6 +7,7 @@ import { IoIosPeople, IoIosCopy, IoMdShare } from "react-icons/io";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { FaWallet } from "react-icons/fa";
 import { BsArrowBarLeft, BsArrowLeftCircle } from "react-icons/bs";
+import { AuthContext } from "../context/Context";
 
 
 function Profiledetail() {
@@ -14,30 +15,36 @@ function Profiledetail() {
   const Goback = () => {
     navigate(-1);
   };
+  const {user} = useContext(AuthContext);
+  const [cards, setCards]=useState({
+    balance: user.balance,
+    noreferrals: user.noreferral,
+    referralcode:user.referralcode,
+  });
 
   const [show, setShow] = useState(false);
   const [regInput, setRegInput] = useState({
-    fname: "",
+    fname: user.fname,
     fnamebc: false,
     fnameht: "",
 
-    mname: "",
+    mname: user.mname,
     mnamebc: false,
     mnameht: "",
 
-    lname: "",
+    lname: user.lname,
     lnamebc: false,
     lnameht: "",
 
-    email: "",
+    email: user.email,
     emailbc: false,
     emailht: "",
 
-    phone: "",
+    phone: user.phone,
     phonebc: false,
     phoneht: "",
 
-    organization: "",
+    organization: user.organization,
     organizationbc: false,
     organizationht: "",
 
@@ -219,7 +226,7 @@ function Profiledetail() {
                 <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
                     <small>Current Balance</small> <br />
-                    <span className="fs-4 fw-semibold text-dark money-color">2445 <sup>ETB</sup></span>
+                    <span className="fs-4 fw-semibold text-dark money-color">{cards.balance} <sup>ETB</sup></span>
                   </div>
                   <FaWallet size={28} className="money-color" />
                 </div>
@@ -229,7 +236,7 @@ function Profiledetail() {
                 <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
                     <small>Referred Customers</small> <br />
-                    <span className="fs-4 fw-semibold text-dark">108</span>
+                    <span className="fs-4 fw-semibold text-dark">{cards.noreferrals}</span>
                   </div>
                   <IoIosPeople size={32} className="text-primary" />
                 </div>
@@ -238,7 +245,7 @@ function Profiledetail() {
                 <div className="d-flex justify-content-between align-items-center p-3   mt-0 bg-warning rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
                     <small>Referral code</small> <br />
-                    <span className="fs-4 fw-semibold text-dark">DFCTYN12</span>
+                    <span className="fs-4 fw-semibold text-dark">{cards.referralcode}</span>
                   </div>
                   
                     <IoMdShare size={30} />

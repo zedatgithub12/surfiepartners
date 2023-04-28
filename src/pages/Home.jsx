@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import Logo from "../assets/logo.png";
@@ -15,8 +15,18 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { GrFormClose } from "react-icons/gr";
 import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
+import { AuthContext } from "../context/Context";
 
 function Home() {
+
+  const {user} = useContext(AuthContext);
+  const [cards, setCards]=useState({
+    balance: user.balance,
+    noreferrals: user.noreferral,
+    referralcode:user.referralcode,
+  });
+
+
   const navigate = useNavigate();
   const [paging, setPaging] = useState([]);
   const [withmodal, setWithModal] = useState(false);
@@ -137,7 +147,7 @@ function Home() {
               <div>
                 <small>Current Balance</small> <br />
                 <span className="fs-4 fw-semibold text-dark money-color">
-                  2445 <sup>ETB</sup>
+                  {cards.balance} <sup>ETB</sup>
                 </span>
               </div>
               <FaWallet size={28} className="money-color" />
@@ -148,7 +158,7 @@ function Home() {
             <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
               <div>
                 <small>Referred Customers</small> <br />
-                <span className="fs-4 fw-semibold text-dark">108</span>
+                <span className="fs-4 fw-semibold text-dark"> {cards.noreferrals}</span>
               </div>
               <IoIosPeople size={32} className="text-primary" />
             </div>
@@ -157,11 +167,11 @@ function Home() {
             <div className="d-flex justify-content-between align-items-center p-3 border  mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
               <div>
                 <small>Referral code</small> <br />
-                <span className="fs-4 fw-semibold text-dark">DFCTYN12</span>
+                <span className="fs-4 fw-semibold text-dark">{cards.referralcode}</span>
               </div>
               <IconButton
                 aria-label="delete"
-                onClick={() => copyToClipboard("DFCTYN12")}
+                onClick={() => copyToClipboard(cards.referralcode)}
               >
                 <IoIosCopy size={30} />
               </IconButton>

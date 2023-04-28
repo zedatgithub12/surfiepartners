@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -22,8 +22,10 @@ import Connection from "../constants/Connections";
 import Modal from "react-bootstrap/Modal";
 import Header from "../components/header";
 import { BsArrowBarLeft } from "react-icons/bs";
+import {AuthContext} from '../context/Context';
 
 function CreateAccount() {
+  const {user} = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
   const [license, setLicense] = useState("Select License");
   const [Period, setPeriod] = useState("monthly");
@@ -91,7 +93,7 @@ function CreateAccount() {
     paymentmht: "",
 
 
-    referralCode: "",
+    referralCode: user.referralcode,
 
     errormessage: "",
   });

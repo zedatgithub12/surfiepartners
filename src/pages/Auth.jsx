@@ -1,17 +1,61 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import Logo from "../assets/logo.png";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import Checkbox from "@mui/material/Checkbox";
 import { BsEyeSlash, BsEye } from "react-icons/bs";
-import Header from "../components/header";
+import { AuthContext } from "../context/Context";
+import Connection from "../constants/Connections";
+import MuiAlert from "@mui/material/Alert";
+import { IoMdClose } from "react-icons/io";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function Auth() {
+  const navigate = useNavigate();
+  const { updateUser } = useContext(AuthContext);
+
+  const handleUpdateName = (
+  response
+  ) => {
+    updateUser({
+      fname: response.fname,
+      mname: response.mname,
+      lname: response.lname,
+      email: response.email,
+      phone: response.phone,
+      organization: response.organization,
+      referralcode: response.referralcode,
+      balance: response.balance,
+      noreferral: response.noreferral,
+      status: response.status,
+    });
+  };
+
+  const [open, setOpen] = React.useState(false);
+
+  const close = () => {
+    setOpen(false);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  /******************************************** */
+  //Register Partner Section
+  /******************************************** */
   const [register, setRegister] = useState(false);
   const [show, setShow] = useState(false);
+  const [regSpinner, setRegSpinner] = useState(false);
 
   const [regInput, setRegInput] = useState({
     fname: "",
@@ -45,6 +89,9 @@ function Auth() {
     cpassword: "",
     cpasswordbc: false,
     cpasswordht: "",
+
+    showres: false,
+    serverres: "",
   });
 
   const UpdateFname = (event) => {
@@ -117,95 +164,136 @@ function Auth() {
     });
   };
 
-
-  const CreateAccount=()=>{
+  const CreateAccount = () => {
     const re = /\S+@\S+\.\S+/;
 
+    if (regInput.fname === "") {
+      setRegInput({
+        ...regInput,
+        fnamebc: true,
+        fnameht: "Please enter first name",
+      });
+      document.getElementById("fname").focus();
+    } else if (regInput.mname === "") {
+      setRegInput({
+        ...regInput,
+        mnamebc: true,
+        mnameht: "Please enter middle name",
+      });
+      document.getElementById("mname").focus();
+    } else if (regInput.lname === "") {
+      setRegInput({
+        ...regInput,
+        lnamebc: true,
+        lnameht: "Please enter last name",
+      });
+      document.getElementById("lname").focus();
+    } else if (regInput.email === "") {
+      setRegInput({
+        ...regInput,
+        emailbc: true,
+        emailht: "Please enter email",
+      });
+      document.getElementById("regemail").focus();
+    } else if (!re.test(regInput.email)) {
+      setRegInput({
+        ...regInput,
+        emailbc: true,
+        emailht: "email must contain @ and . symbols",
+      });
+      document.getElementById("regemail").focus();
+    } else if (regInput.phone === "") {
+      setRegInput({
+        ...regInput,
+        phonebc: true,
+        phoneht: "Please enter phone number",
+      });
+      document.getElementById("phone").focus();
+    } else if (regInput.password === "") {
+      setRegInput({
+        ...regInput,
+        passwordbc: true,
+        passwordht: "Please enter password",
+      });
+      document.getElementById("password").focus();
+    } else if (regInput.cpassword === "") {
+      setRegInput({
+        ...regInput,
+        cpasswordbc: true,
+        cpasswordht: "Please confirm password",
+      });
+      document.getElementById("cpassword").focus();
+    } else if (!(regInput.cpassword === regInput.password)) {
+      setRegInput({
+        ...regInput,
+        cpasswordbc: true,
+        cpasswordht: "Password doesn't match!",
+      });
+      document.getElementById("cpassword").focus();
+    } else {
+      setRegSpinner(true);
+      //the api call to the backend of the system will be made from here!
+      var Api = Connection.api + Connection.register;
+      var headers = {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      };
 
-  if(regInput.fname === ""){
-    setRegInput({
-      ...regInput,
-      fnamebc: true,
-      fnameht: "Please enter first name",
-    });
-    document.getElementById('fname').focus();
-  }
-  else if(regInput.mname === ""){
-    setRegInput({
-      ...regInput,
-      mnamebc: true,
-      mnameht: "Please enter middle name",
-    });
-    document.getElementById('mname').focus();
-  }
-  else if(regInput.lname === ""){
-    setRegInput({
-      ...regInput,
-      lnamebc: true,
-      lnameht: "Please enter last name",
-    });
-    document.getElementById('lname').focus();
-  }
-  else if(regInput.email === ""){
-    setRegInput({
-      ...regInput,
-      emailbc: true,
-      emailht: "Please enter email",
-    });
-    document.getElementById('regemail').focus();
-  }
+      var data = {
+        fname: regInput.fname,
+        mname: regInput.mname,
+        lname: regInput.lname,
+        email: regInput.email,
+        phone: regInput.phone,
+        organization: regInput.organization,
+        password: regInput.password,
+      };
 
-  else if(!(re.test(regInput.email))){
-    setRegInput({
-      ...regInput,
-      emailbc: true,
-      emailht: "email must contain @ and . symbols",
-    });
-    document.getElementById('regemail').focus();
-  }
-
-  else if(regInput.phone === ""){
-    setRegInput({
-      ...regInput,
-      phonebc: true,
-      phoneht: "Please enter phone number",
-    });
-    document.getElementById('phone').focus();
-  }
-
-  else if(regInput.password === ""){
-    setRegInput({
-      ...regInput,
-      passwordbc: true,
-      passwordht: "Please enter password",
-    });
-    document.getElementById('password').focus();
-  }
-  else if(regInput.cpassword === ""){
-    setRegInput({
-      ...regInput,
-      cpasswordbc: true,
-      cpasswordht: "Please confirm password",
-    });
-    document.getElementById('cpassword').focus();
-  }
-  else if(!(regInput.cpassword === regInput.password)){
-    setRegInput({
-      ...regInput,
-      cpasswordbc: true,
-      cpasswordht: "Password doesn't match!",
-    });
-    document.getElementById('cpassword').focus();
-  }
-
-else {
-  //the api call to the backend of the system will be made from here!
-  alert("all is well");
-}
-
+      fetch(Api, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          if (response === "200") {
+            setRegSpinner(false);
+            setOpen(true);
+            setRegister(false);
+            setRegInput({
+              ...regInput,
+              showres: false,
+              serverres: "",
+            });
+          } else if (response === "80") {
+            setRegSpinner(false);
+            setOpen(false);
+            setRegInput({
+              ...regInput,
+              showres: true,
+              serverres: "Email address already exist!",
+            });
+          } else if (response === "81") {
+            setRegSpinner(false);
+            setOpen(false);
+            setRegInput({
+              ...regInput,
+              showres: true,
+              serverres: "Phone number already exist!",
+            });
+          }
+        })
+        .catch((e) => {
+          setRegSpinner(false);
+          setOpen(false);
+        });
+    }
   };
 
-
+  /****************************************** */
+  //Login handling credentials
+  /****************************************** */
+  const [logSpinner, setLogSpinner] = useState(false);
   const [logInput, setLogInput] = useState({
     email: "",
     emailbc: false,
@@ -216,58 +304,101 @@ else {
     passwordht: "",
   });
 
-  const updateLogEmail=(event)=>{
+  const updateLogEmail = (event) => {
     setLogInput({
       ...logInput,
       email: event.target.value,
-     
     });
-  }
-  const updateLogPassword=(event)=>{
+  };
+  const updateLogPassword = (event) => {
     setLogInput({
       ...logInput,
       password: event.target.value,
-     
     });
-  }
+  };
 
-const Login=()=>{
-  const re = /\S+@\S+\.\S+/;
+  const Login = () => {
+    const re = /\S+@\S+\.\S+/;
+    if (logInput.email === "") {
+      setLogInput({
+        ...logInput,
+        emailbc: true,
+        emailht: "Please enter email",
+      });
+      document.getElementById("logEmail").focus();
+    } else if (!re.test(logInput.email)) {
+      setLogInput({
+        ...logInput,
+        emailbc: true,
+        emailht: "email must contain @ and . symbols",
+      });
+      document.getElementById("logEmail").focus();
+    } else if (logInput.password === "") {
+      setLogInput({
+        ...logInput,
+        passwordbc: true,
+        passwordht: "Please enter your password",
+      });
+      document.getElementById("logpassword").focus();
+    } else {
+      setLogSpinner(true);
+      //the api call to the backend of the system will be made from here!
+      var Api = Connection.api + Connection.login;
+      var headers = {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      };
 
+      var data = {
+        email: logInput.email,
+        password: logInput.password,
+      };
 
-   if(logInput.email === ""){
-    setLogInput({
-      ...logInput,
-      emailbc: true,
-      emailht: "Please enter email",
-    });
-    document.getElementById('logEmail').focus();
-  }
+      fetch(Api, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(data),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          if (!(response == "83")) {
+            setLogSpinner(false);
 
-  else if(!(re.test(logInput.email))){
-    setLogInput({
-      ...logInput,
-      emailbc: true,
-      emailht: "email must contain @ and . symbols",
-    });
-    document.getElementById('logEmail').focus();
-  }
+            handleUpdateName(response);
+            setServerResponse({
+              showres: false,
+              errorMsg: "",
+            });
+            navigate("/home");
+          } else if (response.status == "83") {
+            setLogSpinner(false);
+            setServerResponse({
+              showres: true,
+              errorMsg: "Incorrect email or password",
+            });
+          } else {
+            setLogSpinner(false);
+            setServerResponse({
+              showres: true,
+              errorMsg: "Incorrect email or password!",
+            });
+          }
+        })
+        .catch((e) => {
+          setLogSpinner(false);
+        });
+    }
+  };
 
-  else if(logInput.password === ""){
-    setLogInput({
-      ...logInput,
-      passwordbc: true,
-      passwordht: "Please enter your password",
-    });
-    document.getElementById('logPassword').focus();
-  }
-  else {
+  // the axios methos imported from AuthUser Function inside the component folder
 
-    alert("all is well");
-  }
-}
+  const [loading, setLoading] = useState(false);
 
-
+  //server reponse states
+  const [serverresponse, setServerResponse] = useState({
+    showres: false,
+    errorMsg: "",
+  });
 
   return (
     <>
@@ -281,6 +412,21 @@ const Login=()=>{
       </Container>
 
       <Container className="mt-5 py-5" id="authcard">
+        {open ? (
+          <>
+            <Alert
+              severity="success"
+              className="w-75 mx-auto d-flex  align-items-center position-relative"
+            >
+              Successfully Registered!
+              <IoMdClose
+                size={18}
+                onClick={() => close()}
+                className="position-absolute end-0 me-3"
+              />
+            </Alert>
+          </>
+        ) : null}
         {register ? (
           <Row className="d-flex justify-content-center align-items-center p-4 ">
             <Col className="bg-light border-0 rounded-2 shadow-sm p-4  ">
@@ -295,12 +441,20 @@ const Login=()=>{
                   </NavLink>
                 </Col>
               </Row>
-
-              <div className="input-group mt-4">
+              {regInput.showres ? (
+                <small class="form-text mt-0 text-danger bg-danger bg-opacity-10 p-2 rounded form-control border-0 text-center mt-2">
+                  {regInput.serverres}
+                </small>
+              ) : null}
+              <div className="input-group mt-3">
                 <input
                   type="text"
                   id="fname"
-                  className={regInput.fnamebc ? "form-control border-danger" : "form-control "}
+                  className={
+                    regInput.fnamebc
+                      ? "form-control border-danger"
+                      : "form-control "
+                  }
                   placeholder="First Name"
                   aria-label="firstname"
                   value={regInput.fname}
@@ -310,45 +464,68 @@ const Login=()=>{
                 <input
                   type="text"
                   id="mname"
-                  className={regInput.mnamebc ? "form-control border-danger" : "form-control"}
+                  className={
+                    regInput.mnamebc
+                      ? "form-control border-danger"
+                      : "form-control"
+                  }
                   placeholder="Middle Name"
                   aria-label="Middle Name"
                   value={regInput.mname}
                   onChange={UpdateMname}
                 />
-                
               </div>
-              <small  class="form-text ps-0 pt-0 text-danger">{regInput.fnameht} {regInput.mnameht}</small>
+              <small class="form-text ps-0 pt-0 text-danger">
+                {regInput.fnameht} {regInput.mnameht}
+              </small>
               <input
                 type="text"
                 id="lname"
-                className={regInput.lnamebc ? "form-control mt-3 border-danger" : "form-control mt-3"}
+                className={
+                  regInput.lnamebc
+                    ? "form-control mt-3 border-danger"
+                    : "form-control mt-3"
+                }
                 placeholder="Last Name"
                 aria-label="Last Name"
                 value={regInput.lname}
                 onChange={UpdateLname}
               />
-              <small  class="form-text mt-0 text-danger">{regInput.lnameht}</small>
+              <small class="form-text mt-0 text-danger">
+                {regInput.lnameht}
+              </small>
               <input
                 type="email"
                 id="regemail"
-                className={regInput.emailbc ? "form-control mt-3 border-danger" : "form-control mt-3 "}
+                className={
+                  regInput.emailbc
+                    ? "form-control mt-3 border-danger"
+                    : "form-control mt-3 "
+                }
                 placeholder="Email Address"
                 aria-label="Email Address"
                 value={regInput.email}
                 onChange={UpdateEmail}
               />
-                  <small  class="form-text mt-0 text-danger">{regInput.emailht} </small>
+              <small class="form-text mt-0 text-danger">
+                {regInput.emailht}{" "}
+              </small>
               <input
                 type="phone"
                 id="phone"
-                className={regInput.phonebc ? "form-control mt-3 border-danger" : "form-control mt-3 "}
+                className={
+                  regInput.phonebc
+                    ? "form-control mt-3 border-danger"
+                    : "form-control mt-3 "
+                }
                 placeholder="Phone"
                 aria-label="Phone"
                 value={regInput.phone}
                 onChange={UpdatePhone}
               />
-              <small  class="form-text mt-0 text-danger">{regInput.phoneht} </small>
+              <small class="form-text mt-0 text-danger">
+                {regInput.phoneht}{" "}
+              </small>
               <input
                 type="text"
                 id="organization"
@@ -358,22 +535,32 @@ const Login=()=>{
                 value={regInput.organization}
                 onChange={UpdateOrg}
               />
-             <small  class="form-text mt-0 text-danger">{regInput.organizationht} </small>
+              <small class="form-text mt-0 text-danger">
+                {regInput.organizationht}{" "}
+              </small>
               <div className="input-group mt-3">
                 <input
                   type={show ? "text" : "password"}
                   id="password"
-                  className={regInput.passwordbc ? "form-control border-danger" : "form-control "}
+                  className={
+                    regInput.passwordbc
+                      ? "form-control border-danger"
+                      : "form-control "
+                  }
                   placeholder="Password"
                   aria-label="Password"
                   value={regInput.password}
                   onChange={UpdatePass}
                 />
-            
+
                 <input
                   type={show ? "text" : "password"}
                   id="cpassword"
-                  className={regInput.cpasswordbc ? "form-control border-danger" : "form-control "}
+                  className={
+                    regInput.cpasswordbc
+                      ? "form-control border-danger"
+                      : "form-control "
+                  }
                   placeholder="Confirm Password"
                   aria-label="Confirm Password"
                   value={regInput.cpassword}
@@ -387,13 +574,28 @@ const Login=()=>{
                   {show ? <BsEye size={18} /> : <BsEyeSlash size={18} />}
                 </button>
               </div>
-              <small  class="form-text mt-0 text-danger">{regInput.passwordht} </small><small  class="form-text mt-0 text-danger">{regInput.cpasswordht} </small>
+              <small class="form-text mt-0 text-danger">
+                {regInput.passwordht}{" "}
+              </small>
+              <small class="form-text mt-0 text-danger">
+                {regInput.cpasswordht}{" "}
+              </small>
               <button
                 type="button"
+                disabled={regSpinner ? true : false}
                 className="btn btn-primary mt-4 form-control"
                 onClick={() => CreateAccount()}
               >
-                Create Account
+                {regSpinner ? (
+                  <div
+                    className="spinner-border spinner-border-sm text-light "
+                    role="status"
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                ) : (
+                  "Create Account"
+                )}
               </button>
             </Col>
           </Row>
@@ -410,29 +612,44 @@ const Login=()=>{
                     Don't have an account?
                   </NavLink>
                 </Col>
+                {serverresponse.showres ? (
+                  <small class="form-text mt-0 text-danger bg-danger bg-opacity-10 p-2 rounded form-control border-0 text-center mt-2">
+                    {serverresponse.errorMsg}
+                  </small>
+                ) : null}
               </Row>
 
               <input
                 type="email"
-                id = "logEmail"
-                className={logInput.emailbc ? "form-control mt-5 border-danger" : "form-control mt-5"}
+                id="logEmail"
+                className={
+                  logInput.emailbc
+                    ? "form-control mt-5 border-danger"
+                    : "form-control mt-5"
+                }
                 placeholder="Email Address"
                 aria-label="Email Address"
                 value={logInput.email}
                 onChange={updateLogEmail}
               />
-                <small  class="form-text mt-0 text-danger">{logInput.emailht}</small>
+              <small class="form-text mt-0 text-danger">
+                {logInput.emailht}
+              </small>
               <div className="input-group mt-3">
                 <input
                   type={show ? "text" : "password"}
                   id="logpassword"
-                  className={logInput.passwordbc ? "form-control  border-danger" : "form-control "}
+                  className={
+                    logInput.passwordbc
+                      ? "form-control  border-danger"
+                      : "form-control "
+                  }
                   placeholder="Password"
                   aria-label="Password"
                   value={logInput.password}
                   onChange={updateLogPassword}
                 />
-                
+
                 <button
                   type="button"
                   className="btn btn-secondary"
@@ -441,14 +658,26 @@ const Login=()=>{
                   {show ? <BsEye size={18} /> : <BsEyeSlash size={18} />}
                 </button>
               </div>
-              <small  class="form-text mt-0 text-danger">{logInput.passwordht}</small>
+              <small class="form-text mt-0 text-danger">
+                {logInput.passwordht}
+              </small>
 
               <button
                 type="button"
+                disabled={logSpinner ? true : false}
                 className="btn btn-primary mt-4 form-control"
                 onClick={() => Login()}
               >
-                Login
+                {logSpinner ? (
+                  <div
+                    className="spinner-border spinner-border-sm text-light "
+                    role="status"
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                ) : (
+                  "Login"
+                )}
               </button>
 
               <Row className="d-flex justify-content-between align-items-center text-center mt-3">
@@ -465,7 +694,7 @@ const Login=()=>{
         )}
       </Container>
 
-      <Container fluid className="text-center position-fixed bottom-0">
+      <Container fluid className="text-center ">
         <p className="text-muted small">
           2023 © All right reserved by Afromina Digitals
         </p>
