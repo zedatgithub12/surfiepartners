@@ -9,17 +9,19 @@ import { FaWallet } from "react-icons/fa";
 import { BsArrowBarLeft, BsArrowLeftCircle } from "react-icons/bs";
 import { AuthContext } from "../context/Context";
 
-
 function Profiledetail() {
   const navigate = useNavigate();
   const Goback = () => {
     navigate(-1);
   };
-  const {user} = useContext(AuthContext);
-  const [cards, setCards]=useState({
+
+  const userinfo = sessionStorage.getItem("user");
+  const user = JSON.parse(userinfo);
+
+  const [cards, setCards] = useState({
     balance: user.balance,
     noreferrals: user.noreferral,
-    referralcode:user.referralcode,
+    referralcode: user.referralcode,
   });
 
   const [show, setShow] = useState(false);
@@ -218,38 +220,42 @@ function Profiledetail() {
     <>
       <Header />
       <Container>
-        <Row className="mt-5 shadow bg-white py-3 rounded px-3">
-    
+        <Row className="mt-5 shadow bg-white py-1 rounded px-3">
           <Col sm={12}>
             <Row className="px-2 mb-1">
-              <Col>
+              <Col className="pt-3">
                 <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
                     <small>Current Balance</small> <br />
-                    <span className="fs-4 fw-semibold text-dark money-color">{cards.balance} <sup>ETB</sup></span>
+                    <span className="fs-4 fw-semibold text-dark money-color">
+                      {cards.balance} <sup>ETB</sup>
+                    </span>
                   </div>
                   <FaWallet size={28} className="money-color" />
                 </div>
               </Col>
 
-              <Col>
+              <Col className="pt-3">
                 <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
                     <small>Referred Customers</small> <br />
-                    <span className="fs-4 fw-semibold text-dark">{cards.noreferrals}</span>
+                    <span className="fs-4 fw-semibold text-dark">
+                      {cards.noreferrals}
+                    </span>
                   </div>
                   <IoIosPeople size={32} className="text-primary" />
                 </div>
               </Col>
-              <Col>
+              <Col className="pt-3">
                 <div className="d-flex justify-content-between align-items-center p-3   mt-0 bg-warning rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
                     <small>Referral code</small> <br />
-                    <span className="fs-4 fw-semibold text-dark">{cards.referralcode}</span>
+                    <span className="fs-4 fw-semibold text-dark">
+                      {cards.referralcode}
+                    </span>
                   </div>
-                  
-                    <IoMdShare size={30} />
-               
+
+                  <IoMdShare size={30} />
                 </div>
               </Col>
             </Row>
@@ -462,13 +468,12 @@ function Profiledetail() {
               </Col>
             </Row>
             <NavLink
-            onClick={Goback}
-            className="text-secondary border rounded px-3 py-1 fw-semibold ms-2 mb-3 my-3  float-end"
-          >
-           <BsArrowBarLeft size={18}/> Back
-          </NavLink>
+              onClick={Goback}
+              className="text-secondary border rounded px-3 py-1 fw-semibold ms-2 mb-3 my-3  float-end"
+            >
+              <BsArrowBarLeft size={18} /> Back
+            </NavLink>
           </Col>
-        
         </Row>
       </Container>
     </>

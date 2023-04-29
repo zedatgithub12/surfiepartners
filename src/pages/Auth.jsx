@@ -17,36 +17,16 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 
 function Auth() {
   const navigate = useNavigate();
-  const { updateUser } = useContext(AuthContext);
 
-  const handleUpdateName = (
-  response
-  ) => {
-    updateUser({
-      fname: response.fname,
-      mname: response.mname,
-      lname: response.lname,
-      email: response.email,
-      phone: response.phone,
-      organization: response.organization,
-      referralcode: response.referralcode,
-      balance: response.balance,
-      noreferral: response.noreferral,
-      status: response.status,
-    });
+
+  const { SignIn } = useContext(AuthContext);
+  const Sign = (status, user) => {
+    SignIn(status, user);
   };
+
 
   const [open, setOpen] = React.useState(false);
-
   const close = () => {
-    setOpen(false);
-  };
-
-  const handleClose = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
     setOpen(false);
   };
 
@@ -56,7 +36,6 @@ function Auth() {
   const [register, setRegister] = useState(false);
   const [show, setShow] = useState(false);
   const [regSpinner, setRegSpinner] = useState(false);
-
   const [regInput, setRegInput] = useState({
     fname: "",
     fnamebc: false,
@@ -364,12 +343,12 @@ function Auth() {
           if (!(response == "83")) {
             setLogSpinner(false);
 
-            handleUpdateName(response);
             setServerResponse({
               showres: false,
               errorMsg: "",
             });
-            navigate("/home");
+            Sign("Signed", response);
+            navigate("/");
           } else if (response.status == "83") {
             setLogSpinner(false);
             setServerResponse({
@@ -681,9 +660,9 @@ function Auth() {
               </button>
 
               <Row className="d-flex justify-content-between align-items-center text-center mt-3">
-                <Col className="text-start d-flex align-items-center ">
+                {/* <Col className="text-start d-flex align-items-center ">
                   <Checkbox label="Remember me" /> <span>Remember me</span>
-                </Col>
+                </Col> */}
 
                 <Col>
                   <NavLink to="./forgotpass">Forgot Password</NavLink>

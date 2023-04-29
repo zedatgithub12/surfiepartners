@@ -25,7 +25,9 @@ import { BsArrowBarLeft } from "react-icons/bs";
 import {AuthContext} from '../context/Context';
 
 function CreateAccount() {
-  const {user} = useContext(AuthContext);
+  const userinfo = sessionStorage.getItem("user");
+  const user = JSON.parse(userinfo);
+
   const [loading, setLoading] = useState(false);
   const [license, setLicense] = useState("Select License");
   const [Period, setPeriod] = useState("monthly");
@@ -804,7 +806,7 @@ function CreateAccount() {
                                     className={
                                       input.licensebc
                                         ? "border-danger border m-0 me-5  font-link"
-                                        : "border m-0 me-5  font-link"
+                                        : "border m-0 me-5  font-link border-dark text-dark"
                                     }
                                     style={{
                                       backgroundColor: "var(--input-bg)",
@@ -851,7 +853,7 @@ function CreateAccount() {
                                     variant="light"
                                     title="1 License"
                                     id="dropdown-basic"
-                                    className="primary-fill border-0 text-dark fw-medium font-link"
+                                    className="primary-fill bg-info text-white border-0 fw-medium font-link"
                                   >
                                     {Period}
                                   </Dropdown.Toggle>
@@ -929,13 +931,14 @@ function CreateAccount() {
                                     {couponprops.errormsg}
                                   </p>
                                 ) : null}
-
+                              
                                 <MDBInput
                                   wrapperClass="mb-1"
                                   placeholder="Referral Code"
                                   size="md"
                                   id="form9"
                                   type="text"
+                                  disabled
                                   required
                                   defaultValue={input.referralCode}
                                   onChange={UpdateReferral}

@@ -12,6 +12,21 @@ function CustomerDetail() {
     navigate(-1);
   };
   const { state } = useLocation();
+  const partner = state == null ? "" : state;
+  const [user, setUser] = useState({
+    fname: partner.fname === null ? "" : partner.fname,
+    mname: partner.mname === null ? "" : partner.mname,
+    lname: partner.lname === null ? "" : partner.lname,
+    status: partner.status === null ? "" : partner.status,
+    license: partner.license === null ? "" : partner.license,
+    subscription: partner.subscription === null ? "" : partner.subscription,
+    duedate: partner.duedate === null ? "" : partner.duedate,
+    email: partner.email === null ? "" : partner.email,
+    phone: partner.phone === null ? "" : partner.phone,
+    date: partner.date === null ? "" : partner.date,
+    address: partner.address === null ? "" : partner.address,
+    payment_method: partner.payment_method === null ? "" : partner.payment_method,
+  })
   const [pmodal, setPModal] = useState("Telebirr");
   const [renew, setRenew] = useState(false);
   const [upgrade, setUpgrade] = useState(false);
@@ -94,7 +109,9 @@ function CustomerDetail() {
   };
 
   useEffect(() => {
-    return () => {};
+    return () => {
+      
+    };
   }, []);
   return (
     <>
@@ -112,28 +129,28 @@ function CustomerDetail() {
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-1 rounded">
               <p className=" my-auto">Customer Fullname</p>
               <p className="fw-semibold text-muted  my-auto text-capitalize">
-                {state.fname} {state.mname}
+                {user.fname} {user.mname}
               </p>
             </div>
 
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Status</p>
               <p className="fw-semibold text-muted  my-auto text-capitalize">
-                {state.status === "1" ? (
+                {user.status === "1" ? (
                   <span class="  bg-opacity-10 text-success pe-1 rounded-1">
-                    {Status(state.status)}
+                    {Status(user.status)}
                   </span>
-                ) : state.status === "2" ? (
+                ) : user.status === "2" ? (
                   <span class="badge bg-danger bg-opacity-10 text-danger pe-1 rounded-1">
-                    {Status(state.status)}
+                    {Status(user.status)}
                   </span>
-                ) : state.status === "3" ? (
+                ) : user.status === "3" ? (
                   <span class="badge bg-dark bg-opacity-10 text-dark pe-1 rounded-1">
-                    {Status(state.status)}
+                    {Status(user.status)}
                   </span>
                 ) : (
                   <span class="badge bg-secondary bg-opacity-10 text-secondary pe-1 rounded-1">
-                    {Status(state.status)}
+                    {Status(user.status)}
                   </span>
                 )}
               </p>
@@ -142,38 +159,38 @@ function CustomerDetail() {
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">License</p>
               <p className="fw-semibold text-muted  my-auto">
-                {state.license} Device
+                {user.license} Device
               </p>
             </div>
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Subscription</p>
               <p className="fw-semibold text-muted  my-auto text-capitalize">
-                {state.subscription}
+                {user.subscription}
               </p>
             </div>
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Due Date</p>
-              <p className="fw-semibold text-muted  my-auto">{state.duedate}</p>
+              <p className="fw-semibold text-muted  my-auto">{user.duedate}</p>
             </div>
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Email</p>
-              <p className="fw-semibold text-muted  my-auto">{state.email}</p>
+              <p className="fw-semibold text-muted  my-auto">{user.email}</p>
             </div>
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Phone</p>
-              <p className="fw-semibold text-muted  my-auto">{state.phone}</p>
+              <p className="fw-semibold text-muted  my-auto">{user.phone}</p>
             </div>
 
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Subscription Date</p>
-              <p className="fw-semibold text-muted  my-auto">{state.date}</p>
+              <p className="fw-semibold text-muted  my-auto">{user.date}</p>
             </div>
 
-            {state.address ? (
+            {user.address ? (
               <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
                 <p className=" my-auto">Address</p>
                 <p className="fw-semibold text-muted  my-auto">
-                  {state.address}
+                  {user.address}
                 </p>
               </div>
             ) : null}
@@ -181,7 +198,7 @@ function CustomerDetail() {
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Payment Channel</p>
               <p className="fw-semibold text-muted  my-auto">
-                {state.payment_method}
+                {user.payment_method}
               </p>
             </div>
           </Col>
@@ -207,13 +224,13 @@ function CustomerDetail() {
                 <div className="d-flex justify-content-between align-items-center px-2 py-2 mt-2 rounded">
                   <p className=" my-auto">License</p>
                   <p className="fw-semibold text-muted  my-auto">
-                    {state.license} Device
+                    {user.license} Device
                   </p>
                 </div>
                 <div className="d-flex justify-content-between align-items-center px-2  py-2  rounded">
                   <p className=" my-auto">Subscription </p>
                   <p className="fw-semibold text-muted  my-auto text-capitalize">
-                    {state.subscription}
+                    {user.subscription}
                   </p>
                 </div>
                 <div className="d-flex justify-content-between align-items-center px-2  py-2  rounded">

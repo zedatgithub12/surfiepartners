@@ -13,27 +13,27 @@ import Header from "../components/header";
 import ReactPaginate from "react-paginate";
 import Dropdown from "react-bootstrap/Dropdown";
 import { GrFormClose } from "react-icons/gr";
-import Button from "@mui/material/Button";
 import Snackbar from "@mui/material/Snackbar";
-import { AuthContext } from "../context/Context";
+
 
 function Home() {
-
-  const {user} = useContext(AuthContext);
-  const [cards, setCards]=useState({
-    balance: user.balance,
-    noreferrals: user.noreferral,
-    referralcode:user.referralcode,
-  });
-
-
   const navigate = useNavigate();
+
+  const userinfo = sessionStorage.getItem("user");
+  const user = JSON.parse(userinfo);
   const [paging, setPaging] = useState([]);
   const [withmodal, setWithModal] = useState(false);
   const [pmodal, setPModal] = useState("Telebirr");
   const [open, setOpen] = React.useState(false);
   const [pdetail, setPdetail] = useState(false);
   const [detail, setDetail] = React.useState([]);
+
+  const [cards, setCards]=useState({
+    balance: user.balance,
+    noreferrals: user.noreferral,
+    referralcode:user.referralcode,
+  });
+  const [withloading, setWithLoading] = useState(false);
   const [withdrawal, setWithdrawal] = useState({
     amount: "",
     amountbc: false,
@@ -134,6 +134,7 @@ function Home() {
       });
       document.getElementById("account").focus();
     } else {
+     
       alert("all is well");
     }
   };
@@ -245,7 +246,7 @@ function Home() {
                   <tr
                     key={index}
                     onClick={() =>
-                      navigate("/customerdetails", {
+                      navigate("/customerdetail", {
                         state: { ...item },
                       })
                     }
@@ -304,9 +305,9 @@ function Home() {
 
           <Col sm={4}>
             <NavLink to="/account" className="btn btn-primary px-5 mt-3 mb-2">
-              Create Account
+              Add Customer
             </NavLink>
-<br/>
+              <br/>
             {Withdrwals.length == 0 ? 
          <NavLink
          onClick={() => setWithModal(true)}
@@ -413,7 +414,17 @@ function Home() {
                   className="btn btn-primary mt-4 form-control  w-75 ms-3 mb-3"
                   onClick={() => ConfirmPayout()}
                 >
-                  Confirm
+                   {withloading ? (
+                  <div
+                    className="spinner-border spinner-border-sm text-light "
+                    role="status"
+                  >
+                    <span className="visually-hidden">Loading...</span>
+                  </div>
+                ) : (
+                  "Confirm"
+                )}
+                 
                 </button>
                 <br />
                 <p class="form-text  text-muted mx-3 mt-1  px-4 caption">

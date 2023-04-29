@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -12,40 +12,91 @@ import CustomerDetail from "./pages/CustomerDetail";
 import { AuthContext } from "./context/Context";
 
 function App() {
-
-
+  const [loged, setLoged] = useState(false);
   const [user, setUser] = useState({
-    fname: '',
-    mname:'',
-    lname:'',
-    email: '',
-    phone: '',
-    organization:'',
-    referralcode: '',
-    balance:'0',
-    noreferral:'0',
-    status: '',
+    fname: "",
+    mname: "",
+    lname: "",
+    email: "",
+    phone: "",
+    organization: "",
+    referralcode: "",
+    balance: "0",
+    noreferral: "0",
+    status: "",
 
-    logged: false,
   });
 
-  const updateUser = (newUserInfo) => {
-    setUser((prevUser) => ({ ...prevUser, ...newUserInfo }));
-  };
- 
+  const authContext = useMemo(
+    () => ({
+      user,
+      
+      SignIn: async (status, users) => {
+        if (status === "Signed") {
+          sessionStorage.setItem("user", JSON.stringify(users));
+          sessionStorage.setItem("token", JSON.stringify(users.fname));
+         
+          setLoged(true);
+        } else {
+          setLoged(false);
+        }
+      },
+
+      SignOut: async (status) => {
+        if (status === "Signout") {
+          sessionStorage.clear();
+
+       
+        setLoged(false);
+      }{
+        setLoged(false);
+      }
+      },
+
+      getToken: async () => {
+        const tokenString = sessionStorage.getItem("token");
+        const userToken = JSON.parse(tokenString);
+        return userToken;
+      },
+  
+      getUser: async () => {
+        const userString = sessionStorage.getItem("user");
+        const userDetails = JSON.parse(userString);
+        return userDetails;
+      },
+    }),
+    []
+  );
+
+  useEffect(() => {
+    var tokens = sessionStorage.getItem("token");
+  
+    if (tokens !== null) {
+      setLoged(true);
+    }
+    return () => {};
+  }, [loged]);
   return (
     <>
-      <AuthContext.Provider value={{user, updateUser}}>
+      <AuthContext.Provider value={authContext}>
         <Router>
-          <Routes>
-            <Route path="/" element={<Auth />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/account" element={<CreateAccount />} />
-            <Route path="/customerdetails" element={<CustomerDetail />} />
-            <Route path="/profile" element={<Profiledetail />} />
-            <Route path="/withdrawals" element={<Withdrawals />} />
-            <Route path="/forgotpass" element={<Forgotpass />} />
-          </Routes>
+          {loged ? (
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/Auth" element={<Auth />} />
+              <Route path="/account" element={<CreateAccount />} />
+              <Route path="/customerdetail" element={<CustomerDetail />} />
+              <Route path="/profile" element={<Profiledetail />} />
+              <Route path="/withdrawals" element={<Withdrawals />} />
+              <Route path="/forgotpass" element={<Forgotpass />} />
+            </Routes>
+          ) : (
+            <Routes>
+              <Route path="/" element={<Auth />} />
+              <Route path="/Auth" element={<Auth />} />
+              <Route path="/forgotpass" element={<Forgotpass />} />
+            </Routes>
+          )}
         </Router>
       </AuthContext.Provider>
     </>
