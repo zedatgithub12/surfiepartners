@@ -7,6 +7,7 @@ import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { FaWallet } from "react-icons/fa";
 import { BsArrowBarLeft } from "react-icons/bs";
 import Connection from "../constants/Connections";
+import Footer from "../components/footer";
 
 function Profiledetail() {
   const navigate = useNavigate();
@@ -681,6 +682,7 @@ function Profiledetail() {
           </Col>
         </Row>
       </Container>
+      <Footer />
     </>
   );
 }

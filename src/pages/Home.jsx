@@ -15,6 +15,7 @@ import { GrFormClose } from "react-icons/gr";
 import Snackbar from "@mui/material/Snackbar";
 import Connection from "../constants/Connections";
 import HomeSkeleton from "../ui-component/HomeSkeleton";
+import Footer from "../components/footer";
 
 function Home() {
   const navigate = useNavigate();
@@ -592,11 +593,7 @@ function Home() {
             />
           </Container>
 
-          <Container fluid className="text-center ">
-            <p className="text-muted small">
-              2023 © All right reserved by Afromina Digitals
-            </p>
-          </Container>
+          <Footer />
         </>
       )}
     </>
