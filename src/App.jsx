@@ -24,18 +24,18 @@ function App() {
     balance: "0",
     noreferral: "0",
     status: "",
-
   });
 
   const authContext = useMemo(
     () => ({
       user,
-      
+
       SignIn: async (status, users) => {
         if (status === "Signed") {
           sessionStorage.setItem("user", JSON.stringify(users));
           sessionStorage.setItem("token", JSON.stringify(users.fname));
-         
+          sessionStorage.setItem("balance", JSON.stringify(users.balance));
+          sessionStorage.setItem("referrels", JSON.stringify(users.noreferral));
           setLoged(true);
         } else {
           setLoged(false);
@@ -46,11 +46,11 @@ function App() {
         if (status === "Signout") {
           sessionStorage.clear();
 
-       
-        setLoged(false);
-      }{
-        setLoged(false);
-      }
+          setLoged(false);
+        }
+        {
+          setLoged(false);
+        }
       },
 
       getToken: async () => {
@@ -58,7 +58,7 @@ function App() {
         const userToken = JSON.parse(tokenString);
         return userToken;
       },
-  
+
       getUser: async () => {
         const userString = sessionStorage.getItem("user");
         const userDetails = JSON.parse(userString);
@@ -70,7 +70,7 @@ function App() {
 
   useEffect(() => {
     var tokens = sessionStorage.getItem("token");
-  
+
     if (tokens !== null) {
       setLoged(true);
     }

@@ -12,21 +12,22 @@ function CustomerDetail() {
     navigate(-1);
   };
   const { state } = useLocation();
-  const partner = state == null ? "" : state;
+  const customer = state == null ? "" : state;
   const [user, setUser] = useState({
-    fname: partner.fname === null ? "" : partner.fname,
-    mname: partner.mname === null ? "" : partner.mname,
-    lname: partner.lname === null ? "" : partner.lname,
-    status: partner.status === null ? "" : partner.status,
-    license: partner.license === null ? "" : partner.license,
-    subscription: partner.subscription === null ? "" : partner.subscription,
-    duedate: partner.duedate === null ? "" : partner.duedate,
-    email: partner.email === null ? "" : partner.email,
-    phone: partner.phone === null ? "" : partner.phone,
-    date: partner.date === null ? "" : partner.date,
-    address: partner.address === null ? "" : partner.address,
-    payment_method: partner.payment_method === null ? "" : partner.payment_method,
-  })
+    fname: customer.first_name === null ? "" : customer.first_name,
+    mname: customer.middle_name === null ? "" : customer.middle_name,
+    lname: customer.lname === null ? "" : customer.lname,
+    status: customer.status === null ? "" : customer.status,
+    license: customer.license === null ? "" : customer.license,
+    subscription: customer.subscription === null ? "" : customer.subscription,
+    duedate: customer.duedate === null ? "" : customer.duedate,
+    email: customer.email === null ? "" : customer.email,
+    phone: customer.phone === null ? "" : customer.phone,
+    date: customer.created_at === null ? "" : customer.created_at,
+    address: customer.address === null ? "" : customer.address,
+    payment_method:
+      customer.payment_method === null ? "" : customer.payment_method,
+  });
   const [pmodal, setPModal] = useState("Telebirr");
   const [renew, setRenew] = useState(false);
   const [upgrade, setUpgrade] = useState(false);
@@ -109,17 +110,13 @@ function CustomerDetail() {
   };
 
   useEffect(() => {
-    return () => {
-      
-    };
+    return () => {};
   }, []);
   return (
     <>
       <Header />
       <Container>
         <Row className="mt-5 shadow bg-whiten py-3 rounded px-3 pt-4">
-         
-
           <Col sm={8}>
             <div className="d-flex justify-content-between ">
               <p className="text-muted fw-semibold fs-5 ms-1 ps-1">
@@ -170,7 +167,9 @@ function CustomerDetail() {
             </div>
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Due Date</p>
-              <p className="fw-semibold text-muted  my-auto">{user.duedate}</p>
+              <p className="fw-semibold text-muted  my-auto">
+                {user.status == 0 ? "Not Activated" : ExpireDate(user.duedate)}
+              </p>
             </div>
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Email</p>
@@ -183,7 +182,9 @@ function CustomerDetail() {
 
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Subscription Date</p>
-              <p className="fw-semibold text-muted  my-auto">{user.date}</p>
+              <p className="fw-semibold text-muted  my-auto">
+                {DateSlice(user.date)}
+              </p>
             </div>
 
             {user.address ? (
@@ -198,7 +199,7 @@ function CustomerDetail() {
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Payment Channel</p>
               <p className="fw-semibold text-muted  my-auto">
-                {user.payment_method}
+                {Payment(user.payment_method)}
               </p>
             </div>
           </Col>
@@ -206,21 +207,21 @@ function CustomerDetail() {
             <div className="bg-light rounded mt-5 pt-2 p-4 ">
               <Button
                 onClick={() => Renew()}
-                className="bg-primary fw-semibold small mt-3  rounded shadow-sm text-white"
+                id="primarybtn"
+                className="border-0 fw-semibold small mt-3  rounded shadow-sm text-white"
               >
                 Renew License
               </Button>
-              <p className="mt-3">
-                <Button
-                  onClick={() => UpgradeSub()}
-                  className=" bg-white f small  rounded shadow-sm text-primary"
-                >
-                  Upgrade Subscription
-                </Button>
-              </p>
+              {/* 
+              <Button
+                onClick={() => UpgradeSub()}
+                className=" bg-white f small  rounded shadow-sm text-primary mt-3"
+              >
+                Upgrade Subscription
+              </Button> */}
             </div>
             {renew ? (
-              <div className="bg-primary bg-opacity-10 rounded mt-2 pt-2 p-4 border  ">
+              <div className="bg-info bg-opacity-10 rounded mt-2 pt-2 p-4 border  ">
                 <div className="d-flex justify-content-between align-items-center px-2 py-2 mt-2 rounded">
                   <p className=" my-auto">License</p>
                   <p className="fw-semibold text-muted  my-auto">
@@ -274,27 +275,26 @@ function CustomerDetail() {
                 </div>
                 <button
                   type="button"
-                  className="btn btn-primary mt-4 form-control"
+                  id="primarybtn"
+                  className="btn  mt-4 form-control"
                   onClick={() => ConfirmRenewal()}
                 >
                   Renew
                 </button>
               </div>
             ) : null}
-            
           </Col>
           <Row>
-          <Col>
-           <NavLink
-            onClick={Goback}
-            className="text-secondary border rounded px-3 py-1 fw-semibold ms-2 mb-3 my-3  float-end"
-          >
-           <BsArrowBarLeft size={18}/> Back
-          </NavLink>
-          </Col>
-         </Row>
+            <Col>
+              <NavLink
+                onClick={Goback}
+                className="text-secondary border rounded px-3 py-1 fw-semibold ms-2 mb-3 my-3  float-end"
+              >
+                <BsArrowBarLeft size={18} /> Back
+              </NavLink>
+            </Col>
+          </Row>
         </Row>
-        
       </Container>
     </>
   );

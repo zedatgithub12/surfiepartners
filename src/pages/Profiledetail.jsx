@@ -1,13 +1,12 @@
-import React, { useState, useContext } from "react";
+import React, { useState } from "react";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
 import Header from "../components/header";
-import IconButton from "@mui/material/IconButton";
-import { IoIosPeople, IoIosCopy, IoMdShare } from "react-icons/io";
+import { IoIosPeople, IoMdShare } from "react-icons/io";
 import { AiOutlineEyeInvisible, AiOutlineEye } from "react-icons/ai";
 import { FaWallet } from "react-icons/fa";
-import { BsArrowBarLeft, BsArrowLeftCircle } from "react-icons/bs";
-import { AuthContext } from "../context/Context";
+import { BsArrowBarLeft } from "react-icons/bs";
+import Connection from "../constants/Connections";
 
 function Profiledetail() {
   const navigate = useNavigate();
@@ -25,7 +24,7 @@ function Profiledetail() {
   });
 
   const [show, setShow] = useState(false);
-  const [regInput, setRegInput] = useState({
+  const [profile, setprofile] = useState({
     fname: user.fname,
     fnamebc: false,
     fnameht: "",
@@ -58,26 +57,35 @@ function Profiledetail() {
     cpasswordbc: false,
     cpasswordht: "",
   });
-
+  const [updating, setUpdating] = useState(false);
+  const [message, setMessage] = useState({
+    type: "",
+    content: "",
+  });
+  const [changing, setChanging] = useState(false);
+  const [pass, setPass] = useState({
+    type: "",
+    content: "",
+  });
   const UpdateFname = (event) => {
-    setRegInput({
-      ...regInput,
+    setprofile({
+      ...profile,
       fname: event.target.value,
       fnamebc: false,
       fnameht: "",
     });
   };
   const UpdateMname = (event) => {
-    setRegInput({
-      ...regInput,
+    setprofile({
+      ...profile,
       mname: event.target.value,
       mnamebc: false,
       mnameht: "",
     });
   };
   const UpdateLname = (event) => {
-    setRegInput({
-      ...regInput,
+    setprofile({
+      ...profile,
       lname: event.target.value,
       lnamebc: false,
       lnameht: "",
@@ -85,16 +93,16 @@ function Profiledetail() {
   };
 
   const UpdateEmail = (event) => {
-    setRegInput({
-      ...regInput,
+    setprofile({
+      ...profile,
       email: event.target.value,
       emailbc: false,
       emailht: "",
     });
   };
   const UpdatePhone = (event) => {
-    setRegInput({
-      ...regInput,
+    setprofile({
+      ...profile,
       phone: event.target.value,
       phonebc: false,
       phoneht: "",
@@ -102,14 +110,116 @@ function Profiledetail() {
   };
 
   const UpdateOrg = (event) => {
-    setRegInput({
-      ...regInput,
+    setprofile({
+      ...profile,
       organization: event.target.value,
       organizationbc: false,
       organizationht: "",
     });
   };
+  const validateForm = () => {
+    let isValid = true;
 
+    if (profile.fname.trim() === "") {
+      setprofile({
+        ...profile,
+        fnameht: "First name cannot be empty",
+        fnamebc: true,
+      });
+      isValid = false;
+    }
+
+    if (profile.mname.trim() === "") {
+      setprofile({
+        ...profile,
+        mnameht: "Middle name cannot be empty",
+        mnamebc: true,
+      });
+      isValid = false;
+    }
+
+    if (profile.lname.trim() === "") {
+      setprofile({
+        ...profile,
+        lnameht: "Last name cannot be empty",
+        lnamebc: true,
+      });
+      isValid = false;
+    }
+
+    if (profile.phone.trim() === "") {
+      setprofile({
+        ...profile,
+        phoneht: "Phone number cannot be empty",
+        phonebc: true,
+      });
+      isValid = false;
+    } else if (isNaN(profile.phone)) {
+      setprofile({
+        ...profile,
+        phoneht: "Phone number must be numeric",
+        phonebc: true,
+      });
+      isValid = false;
+    }
+
+    return isValid;
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      setUpdating(true);
+      var Api = Connection.api + Connection.updateprofile + user.id;
+      var headers = {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      };
+      var Data = {
+        fname: profile.fname,
+        mname: profile.mname,
+        lname: profile.lname,
+        phone: profile.phone,
+        organization: profile.organization,
+      };
+
+      fetch(Api, {
+        method: "PUT",
+        headers: headers,
+        body: JSON.stringify(Data),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          if (response.message === "updated successfully") {
+            //disable loading
+            setUpdating(false);
+            sessionStorage.setItem("user", JSON.stringify(response.profile));
+            setMessage({
+              ...message,
+              type: "success",
+              content: response.message,
+            });
+          } else if (response.message === "Partner not found") {
+            setUpdating(false);
+            setMessage({
+              ...message,
+              type: "error",
+              content: response.message,
+            });
+          } else {
+            setUpdating(false);
+            setMessage({
+              ...message,
+              type: "error",
+              content: response.message,
+            });
+          }
+        })
+        .catch((e) => {
+          setUpdating(false);
+        });
+    }
+  };
   const [state, setState] = useState({
     loading: false,
 
@@ -208,9 +318,56 @@ function Profiledetail() {
         confirmPasserrmsg: "",
       });
 
-      // the api call code is going to be written here
+      setChanging(true);
+      var Api = Connection.api + Connection.changepassword + user.id;
+      var headers = {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      };
+      var Data = {
+        oldpass: state.oldpassword,
+        newpass: state.newpassword,
+      };
 
-      alert("all is well");
+      fetch(Api, {
+        method: "PUT",
+        headers: headers,
+        body: JSON.stringify(Data),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          console.log(response.message);
+          if (response.message === "changed successfully") {
+            setChanging(false);
+            setPass({
+              ...pass,
+              type: "success",
+              content: response.message,
+            });
+          } else if (response.message === "Old password does not match") {
+            setChanging(false);
+            setPass({
+              ...pass,
+              type: "error",
+              content: response.message,
+            });
+          } else {
+            setChanging(false);
+            setPass({
+              ...pass,
+              type: "error",
+              content: response.message,
+            });
+          }
+        })
+        .catch((e) => {
+          setChanging(false);
+          setPass({
+            ...pass,
+            type: "error",
+            content: "error changing password",
+          });
+        });
     }
   };
 
@@ -243,7 +400,7 @@ function Profiledetail() {
                       {cards.noreferrals}
                     </span>
                   </div>
-                  <IoIosPeople size={32} className="text-primary" />
+                  <IoIosPeople size={32} className="primary-text" />
                 </div>
               </Col>
               <Col className="pt-3">
@@ -263,102 +420,133 @@ function Profiledetail() {
               <Col sm={6} className=" ">
                 <div className="bg-light rounded m-2 p-4">
                   <p>Your Informations</p>
-                  <div className="input-group mt-4">
-                    <input
-                      type="text"
-                      id="fname"
-                      className={
-                        regInput.fnamebc
-                          ? "form-control border-danger"
-                          : "form-control "
-                      }
-                      placeholder="First Name"
-                      aria-label="firstname"
-                      value={regInput.fname}
-                      onChange={UpdateFname}
-                    />
 
+                  <form onSubmit={handleSubmit}>
+                    <div className="input-group mt-4">
+                      <input
+                        type="text"
+                        id="fname"
+                        className={
+                          profile.fnamebc
+                            ? "form-control border-danger"
+                            : "form-control"
+                        }
+                        placeholder="First Name"
+                        aria-label="firstname"
+                        value={profile.fname}
+                        onChange={UpdateFname}
+                      />
+
+                      <input
+                        type="text"
+                        id="mname"
+                        className={
+                          profile.mnamebc
+                            ? "form-control border-danger"
+                            : "form-control"
+                        }
+                        placeholder="Middle Name"
+                        aria-label="Middle Name"
+                        value={profile.mname}
+                        onChange={UpdateMname}
+                      />
+                    </div>
+                    <small className="form-text ps-0 pt-0 text-danger">
+                      {profile.fnameht} {profile.mnameht}
+                    </small>
                     <input
                       type="text"
-                      id="mname"
+                      id="lname"
                       className={
-                        regInput.mnamebc
-                          ? "form-control border-danger"
-                          : "form-control"
+                        profile.lnamebc
+                          ? "form-control mt-3 border-danger"
+                          : "form-control mt-3"
                       }
-                      placeholder="Middle Name"
-                      aria-label="Middle Name"
-                      value={regInput.mname}
-                      onChange={UpdateMname}
+                      placeholder="Last Name"
+                      aria-label="Last Name"
+                      value={profile.lname}
+                      onChange={UpdateLname}
                     />
-                  </div>
-                  <small class="form-text ps-0 pt-0 text-danger">
-                    {regInput.fnameht} {regInput.mnameht}
-                  </small>
-                  <input
-                    type="text"
-                    id="lname"
-                    className={
-                      regInput.lnamebc
-                        ? "form-control mt-3 border-danger"
-                        : "form-control mt-3"
-                    }
-                    placeholder="Last Name"
-                    aria-label="Last Name"
-                    value={regInput.lname}
-                    onChange={UpdateLname}
-                  />
-                  <small class="form-text mt-0 text-danger">
-                    {regInput.lnameht}
-                  </small>
-                  <input
-                    type="email"
-                    id="regemail"
-                    className={
-                      regInput.emailbc
-                        ? "form-control mt-3 border-danger"
-                        : "form-control mt-3 "
-                    }
-                    placeholder="Email Address"
-                    aria-label="Email Address"
-                    value={regInput.email}
-                    onChange={UpdateEmail}
-                  />
-                  <small class="form-text mt-0 text-danger">
-                    {regInput.emailht}{" "}
-                  </small>
-                  <input
-                    type="phone"
-                    id="phone"
-                    className={
-                      regInput.phonebc
-                        ? "form-control mt-3 border-danger"
-                        : "form-control mt-3 "
-                    }
-                    placeholder="Phone"
-                    aria-label="Phone"
-                    value={regInput.phone}
-                    onChange={UpdatePhone}
-                  />
-                  <small class="form-text mt-0 text-danger">
-                    {regInput.phoneht}{" "}
-                  </small>
-                  <input
-                    type="text"
-                    id="organization"
-                    className="form-control mt-3 "
-                    placeholder="Organization (optional)"
-                    aria-label="Organization"
-                    value={regInput.organization}
-                    onChange={UpdateOrg}
-                  />
-                  <button
-                    type="button"
-                    className="btn btn-primary mt-4 end-0 px-4"
-                    onClick={() => Update()}
-                  >
-                    Update
-                  </button>
+                    <small className="form-text mt-0 text-danger">
+                      {profile.lnameht}
+                    </small>
+                    <input
+                      type="email"
+                      id="regemail"
+                      disabled
+                      className={
+                        profile.emailbc
+                          ? "form-control mt-3 border-danger "
+                          : "form-control mt-3 border-0"
+                      }
+                      placeholder="Email Address"
+                      aria-label="Email Address"
+                      value={profile.email}
+                      onChange={UpdateEmail}
+                    />
+                    <small className="form-text mt-0 text-danger">
+                      {profile.emailht}{" "}
+                    </small>
+                    <input
+                      type="phone"
+                      id="phone"
+                      className={
+                        profile.phonebc
+                          ? "form-control mt-3 border-danger"
+                          : "form-control mt-3 "
+                      }
+                      placeholder="Phone"
+                      aria-label="Phone"
+                      value={profile.phone}
+                      onChange={UpdatePhone}
+                    />
+                    <small className="form-text mt-0 text-danger">
+                      {profile.phoneht}{" "}
+                    </small>
+                    <input
+                      type="text"
+                      id="organization"
+                      className="form-control mt-3 "
+                      placeholder="Organization (optional)"
+                      aria-label="Organization"
+                      value={profile.organization}
+                      onChange={UpdateOrg}
+                    />
+                    <div className="d-flex justify-content-between align-items-center">
+                      <button
+                        type="submit"
+                        id="primarybtn"
+                        disabled={updating ? true : false}
+                        className="btn  mt-4 end-0 px-4"
+                      >
+                        {updating ? (
+                          <div
+                            className="spinner-border spinner-border-sm text-light "
+                            role="status"
+                          >
+                            <span className="visually-hidden">Loading...</span>
+                          </div>
+                        ) : (
+                          "Update"
+                        )}
+                      </button>
+                      <div className="mt-4 end-0">
+                        {message.type === "success" ? (
+                          <div className="m-auto px-4 rounded bg-success bg-opacity-10">
+                            <p className="py-1 text-capitalize my-auto text-success fw-semibold">
+                              {message.content}
+                            </p>
+                          </div>
+                        ) : message.type ? (
+                          <div className="m-auto px-4 rounded bg-danger bg-opacity-10">
+                            <p className="py-1 text-capitalize my-auto text-danger fw-semibold">
+                              {message.content}
+                            </p>
+                          </div>
+                        ) : null}
+                      </div>
+                    </div>
+                  </form>
                 </div>
               </Col>
 
@@ -385,7 +573,7 @@ function Profiledetail() {
                         }
                         id="exampleInputEmail1"
                         aria-describedby="emailHelp"
-                        defaultValue={state.oldpassword}
+                        value={state.oldpassword}
                         onChange={UpdateOldPassword}
                         placeholder="Old Password"
                         required
@@ -407,7 +595,7 @@ function Profiledetail() {
                         id="exampleInputPassword2"
                         type={showpass ? "text" : "password"}
                         required
-                        defaultValue={state.newpassword}
+                        value={state.newpassword}
                         onChange={UpdatePassword}
                         placeholder="New Password"
                       />
@@ -428,7 +616,7 @@ function Profiledetail() {
                         id="exampleInputPassword3"
                         type={showpass ? "text" : "password"}
                         required
-                        defaultValue={state.confirmpassword}
+                        value={state.confirmpassword}
                         onChange={UpdateConfirmPass}
                         placeholder="Confirm Password"
                       />
@@ -454,14 +642,31 @@ function Profiledetail() {
                         {state.confirmPasserrmsg}
                       </div>
                     ) : null}
-                    <div className="mb-2 mt-4">
+                    <div className="d-flex justify-content-between align-items-center">
                       <button
                         type="button"
-                        className="btn btn-primary mt-1 end-0 px-4"
+                        id="primarybtn"
+                        className="btn  mt-1 end-0 px-4"
+                        disabled={changing ? true : false}
                         onClick={() => SubmitChange()}
                       >
                         Change
                       </button>
+                      <div className="mt-1 end-0 ">
+                        {pass.type === "success" ? (
+                          <div className="m-auto px-4 rounded bg-success bg-opacity-10">
+                            <p className="py-1 text-capitalize my-auto text-success fw-semibold">
+                              {pass.content}
+                            </p>
+                          </div>
+                        ) : pass.type ? (
+                          <div className="m-auto px-4 rounded bg-danger bg-opacity-10">
+                            <p className="py-1 text-capitalize my-auto text-danger fw-semibold">
+                              {pass.content}
+                            </p>
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
                   </form>
                 </div>

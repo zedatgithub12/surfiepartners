@@ -75,7 +75,8 @@ function Forgotpass() {
 
             <button
               type="button"
-              className="btn btn-primary mt-4 form-control"
+              id="primarybtn"
+              className="btn  mt-4 form-control"
               onClick={() => Forgot()}
             >
               Forgot
@@ -83,7 +84,7 @@ function Forgotpass() {
 
             <Row className="d-flex justify-content-between align-items-center text-center mt-3">
               <Col>
-                <NavLink to="/">Sign In</NavLink>
+                <NavLink to="/" id="link">Sign In</NavLink>
               </Col>
             </Row>
           </Col>

@@ -1,25 +1,52 @@
+.primary-bg {
+  background-color: #00C6D4;
+}
 
-.primary-bg{
-  background-color: #00C6D4 ;
+#primarybtn {
+  background-color: #00C6D4;
+  color: rgb(255, 255, 255);
 }
-.primary-text{
-color: #00C6D4 ;
+
+#primarybtn:hover {
+  background-color: #00a5b1;
+  color: rgb(255, 255, 255);
 }
+
+.primary-btn-bg {
+  background-color: #00C6D4;
+}
+
+.primary-btn-bg:hover {
+  background-color: #00abb8;
+}
+
+.primary-text {
+  color: #00C6D4;
+}
+
+#link {
+  color: #00a5b1;
+}
+
 .money-color {
   color: #76B404;
 }
+
 .money-bg {
   background-color: #76B404;
 }
+
 .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -46,7 +73,7 @@ color: #00C6D4 ;
 .read-the-docs {
   color: #888;
 }
-#authcard{
-width:500px;
 
+#authcard {
+  width: 500px;
 }

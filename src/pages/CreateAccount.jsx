@@ -22,7 +22,7 @@ import Connection from "../constants/Connections";
 import Modal from "react-bootstrap/Modal";
 import Header from "../components/header";
 import { BsArrowBarLeft } from "react-icons/bs";
-import {AuthContext} from '../context/Context';
+import { AuthContext } from "../context/Context";
 
 function CreateAccount() {
   const userinfo = sessionStorage.getItem("user");
@@ -93,7 +93,6 @@ function CreateAccount() {
 
     paymentmhs: false,
     paymentmht: "",
-
 
     referralCode: user.referralcode,
 
@@ -203,12 +202,11 @@ function CreateAccount() {
   const UpdateCouponCode = (event) => {
     setCoupon(event.target.value);
   };
-//update Referral Code
+  //update Referral Code
   const UpdateReferral = (event) => {
     setInput({
       ...input,
       referralCode: event.target.value,
-    
     });
   };
 
@@ -852,8 +850,8 @@ function CreateAccount() {
                                   <Dropdown.Toggle
                                     variant="light"
                                     title="1 License"
-                                    id="dropdown-basic"
-                                    className="primary-fill bg-info text-white border-0 fw-medium font-link"
+                                    id="dropdown-basic primarybtn"
+                                    className="bg-secondary text-white border-0 fw-medium font-link"
                                   >
                                     {Period}
                                   </Dropdown.Toggle>
@@ -931,7 +929,7 @@ function CreateAccount() {
                                     {couponprops.errormsg}
                                   </p>
                                 ) : null}
-                              
+
                                 <MDBInput
                                   wrapperClass="mb-1"
                                   placeholder="Referral Code"
@@ -946,8 +944,7 @@ function CreateAccount() {
                                     backgroundColor: "var(--input-bg)",
                                     color: "var(--text-color)",
                                   }}
-                                  className= "w-75 mt-4"
-                                  
+                                  className="w-75 mt-4"
                                 />
                               </MDBCol>
                             </MDBRow>
@@ -1022,8 +1019,9 @@ function CreateAccount() {
                         <Button
                           type="button"
                           variant="light"
+                          id="primarybtn"
                           size="md"
-                          className="ms-3 bg-primary text-white border-0 px-5"
+                          className="ms-3  text-white border-0 px-5"
                           onClick={() => CreateCAccount()}
                           disabled={loading ? true : false}
                         >

@@ -18,12 +18,10 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 function Auth() {
   const navigate = useNavigate();
 
-
   const { SignIn } = useContext(AuthContext);
   const Sign = (status, user) => {
     SignIn(status, user);
   };
-
 
   const [open, setOpen] = React.useState(false);
   const close = () => {
@@ -415,7 +413,10 @@ function Auth() {
                 </Col>
 
                 <Col sm={5} className=" me-2">
-                  <NavLink onClick={() => setRegister(!register)}>
+                  <NavLink
+                    onClick={() => setRegister(!register)}
+                    className="text-primary"
+                  >
                     I have an account?
                   </NavLink>
                 </Col>
@@ -562,7 +563,8 @@ function Auth() {
               <button
                 type="button"
                 disabled={regSpinner ? true : false}
-                className="btn btn-primary mt-4 form-control"
+                id="primarybtn"
+                className=" primary-btn-bg border-0 mt-4 form-control"
                 onClick={() => CreateAccount()}
               >
                 {regSpinner ? (
@@ -587,7 +589,10 @@ function Auth() {
                 </Col>
 
                 <Col sm={7} className=" text-end me-2">
-                  <NavLink onClick={() => setRegister(!register)}>
+                  <NavLink
+                    onClick={() => setRegister(!register)}
+                    className="text-primary"
+                  >
                     Don't have an account?
                   </NavLink>
                 </Col>
@@ -644,7 +649,8 @@ function Auth() {
               <button
                 type="button"
                 disabled={logSpinner ? true : false}
-                className="btn btn-primary mt-4 form-control"
+                id="primarybtn"
+                className=" primary-btn-bg border-0 mt-4 form-control"
                 onClick={() => Login()}
               >
                 {logSpinner ? (
@@ -665,7 +671,9 @@ function Auth() {
                 </Col> */}
 
                 <Col>
-                  <NavLink to="./forgotpass">Forgot Password</NavLink>
+                  <NavLink to="./forgotpass" id="link">
+                    Forgot Password
+                  </NavLink>
                 </Col>
               </Row>
             </Col>

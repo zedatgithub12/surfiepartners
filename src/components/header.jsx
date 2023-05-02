@@ -22,11 +22,11 @@ function Header() {
   return (
     <Container fluid className="primary-bg  sticky-top  ">
       <Row className="d-flex justify-content-between p-1 pt-2">
-        <Col sm={2} className="ms-5 my-auto d-flex">
+        <Col sm={8} className="ms-5 my-auto d-flex">
           <img src={Logo} alt="logo" width="90" height="50" />
 
           {user.organization ? (
-            <p className="my-auto fs-2 fw-semibold border-start border-3 border-light ms-3 ps-2 text-white">
+            <p className="my-auto fs-2 fw-semibold border-start border-3 border-light ms-3 ps-2 text-capitalize text-white">
               {user.organization}
             </p>
           ) : null}
