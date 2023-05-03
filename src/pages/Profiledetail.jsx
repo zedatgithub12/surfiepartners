@@ -14,13 +14,20 @@ function Profiledetail() {
   const Goback = () => {
     navigate(-1);
   };
+  const balance = sessionStorage.getItem("balance");
+  const yourbalance = JSON.parse(balance);
+  const referral = sessionStorage.getItem("referrels");
+  const yourreferral = JSON.parse(referral);
+  const monthlyref = sessionStorage.getItem("monthly");
+  const monthlycount = JSON.parse(monthlyref);
 
+  const [monthly, setMonthly] = useState(monthlycount);
   const userinfo = sessionStorage.getItem("user");
   const user = JSON.parse(userinfo);
 
   const [cards, setCards] = useState({
-    balance: user.balance,
-    noreferrals: user.noreferral,
+    balance: yourbalance,
+    noreferrals: yourreferral,
     referralcode: user.referralcode,
   });
 
@@ -384,10 +391,12 @@ function Profiledetail() {
               <Col className="pt-3">
                 <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
-                    <small>Current Balance</small> <br />
-                    <span className="fs-4 fw-semibold text-dark money-color">
-                      {cards.balance} <sup>ETB</sup>
+                    <span className="fs-4 fw-semibold text-dark">
+                      <span className="fs-4 fw-normal text-muted"> ETB </span>
+                      {cards.balance}
                     </span>
+                    <br />
+                    <small>Current Balance</small>
                   </div>
                   <FaWallet size={28} className="money-color" />
                 </div>
@@ -396,10 +405,16 @@ function Profiledetail() {
               <Col className="pt-3">
                 <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
-                    <small>Referred Customers</small> <br />
                     <span className="fs-4 fw-semibold text-dark">
                       {cards.noreferrals}
+                      {monthly ? (
+                        <sup className=" bg-success text-success caption bg-opacity-10 px-1 rounded">
+                          +{monthly}
+                        </sup>
+                      ) : null}
                     </span>
+                    <br />
+                    <small>Referred Customers</small>
                   </div>
                   <IoIosPeople size={32} className="primary-text" />
                 </div>
@@ -486,7 +501,7 @@ function Profiledetail() {
                       onChange={UpdateEmail}
                     />
                     <small className="form-text mt-0 text-danger">
-                      {profile.emailht}{" "}
+                      {profile.emailht}
                     </small>
                     <input
                       type="phone"
@@ -504,15 +519,18 @@ function Profiledetail() {
                     <small className="form-text mt-0 text-danger">
                       {profile.phoneht}{" "}
                     </small>
-                    <input
-                      type="text"
-                      id="organization"
-                      className="form-control mt-3 "
-                      placeholder="Organization (optional)"
-                      aria-label="Organization"
-                      value={profile.organization}
-                      onChange={UpdateOrg}
-                    />
+                    {user.organization ? (
+                      <input
+                        type="text"
+                        id="organization"
+                        disabled
+                        className="form-control mt-3 border-0 "
+                        placeholder="Organization"
+                        aria-label="Organization"
+                        value={profile.organization}
+                        onChange={UpdateOrg}
+                      />
+                    ) : null}
                     <div className="d-flex justify-content-between align-items-center">
                       <button
                         type="submit"
@@ -534,7 +552,7 @@ function Profiledetail() {
                       <div className="mt-4 end-0">
                         {message.type === "success" ? (
                           <div className="m-auto px-4 rounded bg-success bg-opacity-10">
-                            <p className="py-1 text-capitalize my-auto text-success fw-semibold">
+                            <p className="py-1 text-capitalize my-auto text-success fw-normal">
                               {message.content}
                             </p>
                           </div>

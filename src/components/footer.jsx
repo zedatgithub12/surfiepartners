@@ -3,7 +3,7 @@ import { Container } from "react-bootstrap";
 
 const Footer = () => {
   return (
-    <Container fluid className="text-center position-absolute bottom-0">
+    <Container fluid className="text-center mt-3">
     <p className="text-muted small">
       2023 © All right reserved by Afromina Digitals
     </p>

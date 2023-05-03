@@ -12,6 +12,8 @@ const Connection = {
   withdrawals: "/withdrawals/",
   updateprofile: "/update/",
   changepassword: "/changepass/",
+  carddata: "/referrals/",
+  forgot: "/forgotpassword"
 };
 
 export default Connection;

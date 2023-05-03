@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
-import Logo from "../assets/logo.png";
+import noreferre from "../assets/referre.svg";
 import { FaWallet } from "react-icons/fa";
 import { IoIosPeople, IoIosCopy, IoMdClose } from "react-icons/io";
 import Withdrwals from "../data/withdrawals";
@@ -14,7 +14,6 @@ import Dropdown from "react-bootstrap/Dropdown";
 import { GrFormClose } from "react-icons/gr";
 import Snackbar from "@mui/material/Snackbar";
 import Connection from "../constants/Connections";
-import HomeSkeleton from "../ui-component/HomeSkeleton";
 import Footer from "../components/footer";
 
 function Home() {
@@ -22,10 +21,12 @@ function Home() {
 
   const balance = sessionStorage.getItem("balance");
   const yourbalance = JSON.parse(balance);
-
   const referral = sessionStorage.getItem("referrels");
   const yourreferral = JSON.parse(referral);
+  const monthlyref = sessionStorage.getItem("monthly");
+  const monthlycount = JSON.parse(monthlyref);
 
+  const [monthly, setMonthly] = useState(monthlycount);
   const userinfo = sessionStorage.getItem("user");
   const user = JSON.parse(userinfo);
   const [paging, setPaging] = useState([]);
@@ -52,7 +53,10 @@ function Home() {
     accountbc: false,
     accountht: "",
   });
+  const currentDate = new Date();
+  const currentMonth = currentDate.getMonth() + 1;
 
+  const [month, setMonth] = useState(currentMonth);
   const Withdrawals = withdraws ? withdraws.slice(0, 3) : [];
 
   const handleClick = () => {
@@ -200,6 +204,7 @@ function Home() {
   };
 
   useEffect(() => {
+    //get referred customer list
     const getCustomers = async (currentPage) => {
       setLoading(false);
       var Api =
@@ -227,6 +232,8 @@ function Home() {
           setLoading(true);
         });
     };
+
+    //fetch list of withdrawals
     const getWithdrawals = () => {
       setLoading(true);
       var Api = Connection.api + Connection.withdrawals + user.id;
@@ -248,8 +255,33 @@ function Home() {
           setLoading(false);
         });
     };
+    const getCardData = () => {
+      var Api = Connection.api + Connection.carddata + user.id;
+      var headers = {
+        accept: "application/json",
+        "Content-Type": "application/json",
+      };
+      var Data = {
+        month: month,
+        referral: user.referralcode,
+      };
+      fetch(Api, {
+        method: "GET",
+        headers: headers,
+        body: JSON.stringify(Data),
+      })
+        .then((response) => response.json())
+        .then((response) => {
+          sessionStorage.setItem("balance", JSON.stringify(response.balance));
+          sessionStorage.setItem("monthly", JSON.stringify(response.monthly));
+          sessionStorage.setItem("referrels", JSON.stringify(response.total));
+        })
+        .catch((e) => {});
+    };
+
     getCustomers();
     getWithdrawals();
+    getCardData();
     return () => {};
   }, []);
   return (
@@ -269,10 +301,12 @@ function Home() {
               <Col>
                 <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
-                    <small>Current Balance</small> <br />
-                    <span className="fs-4 fw-semibold text-dark money-color">
-                      {cards.balance} <sup>ETB</sup>
+                    <span className="fs-4 fw-semibold text-dark">
+                      <span className="fs-4 fw-normal text-muted"> ETB </span>
+                      {cards.balance}
                     </span>
+                    <br />
+                    <small>Current Balance</small>
                   </div>
                   <FaWallet size={28} className="money-color" />
                 </div>
@@ -281,10 +315,16 @@ function Home() {
               <Col>
                 <div className="d-flex justify-content-between align-items-center p-3 border mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
-                    <small>Referred Customers</small> <br />
                     <span className="fs-4 fw-semibold text-dark">
                       {cards.noreferrals}
+                      {monthly ? (
+                        <sup className=" bg-success text-success caption bg-opacity-10 px-1 rounded">
+                          +{monthly}
+                        </sup>
+                      ) : null}
                     </span>
+                    <br />
+                    <small>Referred Customers</small>
                   </div>
                   <IoIosPeople size={32} className="primary-text" />
                 </div>
@@ -292,16 +332,17 @@ function Home() {
               <Col>
                 <div className="d-flex justify-content-between align-items-center p-3 border  mt-0 bg-light rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
-                    <small>Referral code</small> <br />
                     <span className="fs-4 fw-semibold text-dark">
                       {cards.referralcode}
                     </span>
+                    <br />
+                    <small>Referral code</small>
                   </div>
                   <IconButton
                     aria-label="delete"
                     onClick={() => copyToClipboard(cards.referralcode)}
                   >
-                    <IoIosCopy size={30} />
+                    <IoIosCopy size={28} />
                   </IconButton>
                 </div>
               </Col>
@@ -355,63 +396,80 @@ function Home() {
                     Referred Customers
                   </p>
                   <table className="table  px-3 table-hover">
-                    <thead className="bg-light">
-                      <tr>
-                        <th className="rounded text-muted fw-semibold ">
-                          Name
-                        </th>
-                        <th className="rounded text-muted fw-semibold border-start">
-                          Email
-                        </th>
-                        <th className="rounded text-muted fw-semibold border-start">
-                          Phone
-                        </th>
-                        <th className="rounded text-muted fw-semibold border-start">
-                          Date
-                        </th>
-                        <th className="rounded text-muted fw-semibold border-start">
-                          Status
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {customers.map((item, index) => (
-                        <tr
-                          key={index}
-                          onClick={() =>
-                            navigate("/customerdetail", {
-                              state: { ...item },
-                            })
-                          }
-                        >
-                          <td>
-                            {item.first_name} {item.middle_name}
-                          </td>
-                          <td>{item.email}</td>
-                          <td>{item.phone}</td>
-                          <td>{DateSlice(item.created_at)}</td>
-                          <td>
-                            {item.status === "1" ? (
-                              <span class="bg-success  bg-opacity-10 text-success pe-1 px-2 rounded-1">
-                                {Status(item.status)}
-                              </span>
-                            ) : item.status === "2" ? (
-                              <span class="badge bg-danger bg-opacity-10 text-danger pe-1 rounded-1">
-                                {Status(item.status)}
-                              </span>
-                            ) : item.status === "3" ? (
-                              <span class="badge bg-dark bg-opacity-10 text-dark pe-1 rounded-1">
-                                {Status(item.status)}
-                              </span>
-                            ) : (
-                              <span class="badge bg-secondary bg-opacity-10 text-secondary pe-1 rounded-1">
-                                {Status(item.status)}
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
+                    {customers.length > 0 ? (
+                      <>
+                        <thead className="bg-light">
+                          <tr>
+                            <th className="rounded text-muted fw-semibold ">
+                              Name
+                            </th>
+                            <th className="rounded text-muted fw-semibold border-start">
+                              Email
+                            </th>
+                            <th className="rounded text-muted fw-semibold border-start">
+                              Phone
+                            </th>
+                            <th className="rounded text-muted fw-semibold border-start">
+                              Date
+                            </th>
+                            <th className="rounded text-muted fw-semibold border-start">
+                              Status
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {customers.map((item, index) => (
+                            <tr
+                              key={index}
+                              onClick={() =>
+                                navigate("/customerdetail", {
+                                  state: { ...item },
+                                })
+                              }
+                            >
+                              <td>
+                                {item.first_name} {item.middle_name}
+                              </td>
+                              <td>{item.email}</td>
+                              <td>{item.phone}</td>
+                              <td>{DateSlice(item.created_at)}</td>
+                              <td>
+                                {item.status === "1" ? (
+                                  <span class="bg-success  bg-opacity-10 text-success pe-1 px-2 rounded-1">
+                                    {Status(item.status)}
+                                  </span>
+                                ) : item.status === "2" ? (
+                                  <span class="badge bg-danger bg-opacity-10 text-danger pe-1 rounded-1">
+                                    {Status(item.status)}
+                                  </span>
+                                ) : item.status === "3" ? (
+                                  <span class="badge bg-dark bg-opacity-10 text-dark pe-1 rounded-1">
+                                    {Status(item.status)}
+                                  </span>
+                                ) : (
+                                  <span class="badge bg-secondary bg-opacity-10 text-secondary pe-1 rounded-1">
+                                    {Status(item.status)}
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </>
+                    ) : (
+                      <div className="d-flex justify-content-center align-items-center">
+                        <div className="text-center my-3 p-4">
+                          <img
+                            src={noreferre}
+                            className="img-fluid w-50 h-50 "
+                            alt="no referre"
+                          />
+                          <p className="fs-6 fw-semibold text-muted ">
+                            No referred customer yet!
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </table>
                 </div>
                 {/* the withdrawal record mapping made here */}
