@@ -13,7 +13,8 @@ const Connection = {
   updateprofile: "/update/",
   changepassword: "/changepass/",
   carddata: "/referrals/",
-  forgot: "/forgotpassword"
+  forgot: "/forgotpassword",
+  reset: "/resetpassword",
 };
 
 export default Connection;

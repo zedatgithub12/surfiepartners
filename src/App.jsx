@@ -10,6 +10,7 @@ import Forgotpass from "./pages/Forgotpass";
 import CreateAccount from "./pages/CreateAccount";
 import CustomerDetail from "./pages/CustomerDetail";
 import { AuthContext } from "./context/Context";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   const [loged, setLoged] = useState(false);
@@ -89,12 +90,14 @@ function App() {
               <Route path="/profile" element={<Profiledetail />} />
               <Route path="/withdrawals" element={<Withdrawals />} />
               <Route path="/forgotpass" element={<Forgotpass />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
             </Routes>
           ) : (
             <Routes>
               <Route path="/" element={<Auth />} />
               <Route path="/Auth" element={<Auth />} />
               <Route path="/forgotpass" element={<Forgotpass />} />
+              <Route path="/reset-password/:token" element={<ResetPassword />} />
             </Routes>
           )}
         </Router>

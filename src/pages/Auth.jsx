@@ -9,7 +9,13 @@ import { AuthContext } from "../context/Context";
 import Connection from "../constants/Connections";
 import MuiAlert from "@mui/material/Alert";
 import { IoMdClose } from "react-icons/io";
-import { FormControlLabel, Radio, RadioGroup, Grid } from "@mui/material";
+import {
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Grid,
+  Typography,
+} from "@mui/material";
 import Footer from "../components/footer";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
@@ -279,14 +285,14 @@ function Auth() {
               showres: true,
               serverres: "Phone number already exist!",
             });
-          }
-          else if (response === "82") {
+          } else if (response === "82") {
             setRegSpinner(false);
             setOpen(false);
             setRegInput({
               ...regInput,
               showres: true,
-              serverres: "We are already partners with "+regInput.organization,
+              serverres:
+                "We are already partners with " + regInput.organization,
             });
           }
         })
@@ -470,7 +476,13 @@ function Auth() {
                   <Col className="bg-light border-0 rounded-2 shadow-sm p-4  ">
                     <Row className="d-flex justify-content-between align-items-center">
                       <Col sm={6} className=" text-start">
-                        <p className="fw-bold fs-3">Register here</p>
+                        <Typography className="fw-bold fs-3">
+                          Register here
+                        </Typography>
+
+                        <Typography className="text-muted">
+                          {showAdditionalField && " Contact Person"}
+                        </Typography>
                       </Col>
 
                       <Col sm={5} className=" me-2">
@@ -774,8 +786,6 @@ function Auth() {
           </Grid>
         </Grid>
       </Container>
-
-      <Footer />
     </>
   );
 }

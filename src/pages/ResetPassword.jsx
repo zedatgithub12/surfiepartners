@@ -1,56 +1,81 @@
 import React, { useState } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { Grid, Typography } from "@mui/material";
-import { NavLink } from "react-router-dom";
+import { useParams, NavLink } from "react-router-dom";
 import Logo from "../assets/logo.png";
-import Approved from "../assets/images/Approved.svg";
 import Connection from "../constants/Connections";
-import { BsCheck2Circle } from "react-icons/bs";
+import { BsEyeSlash, BsEye, BsCheck2Circle } from "react-icons/bs";
 import { IoMdWarning } from "react-icons/io";
-function Forgotpass() {
-  const [forInput, setForInput] = useState({
-    email: "",
-    emailbc: false,
-    emailht: "",
+function ResetPassword() {
+  const { token } = useParams();
+  const [Input, setInput] = useState({
+    password: "",
+    passwordbc: false,
+    passwordht: "",
+    cpassword: "",
+    cpasswordbc: false,
+    cpasswordht: "",
+    showres: false,
+    serverres: "",
   });
-  const [forgetting, setForgetting] = useState(false);
-  const updateEmail = (event) => {
-    setForInput({
-      ...forInput,
-      email: event.target.value,
-    });
-  };
+  const [resetting, setResetting] = useState(false);
+  const [show, setShow] = useState(false);
   const [response, setResponse] = useState({
     status: "",
     content: "",
   });
+  const UpdatePass = (event) => {
+    setInput({
+      ...Input,
+      password: event.target.value,
+      passwordbc: false,
+      passwordht: "",
+    });
+  };
+  const UpdateCPass = (event) => {
+    setInput({
+      ...Input,
+
+      cpassword: event.target.value,
+      cpasswordbc: false,
+      cpasswordht: "",
+    });
+  };
   const Forgot = () => {
     const re = /\S+@\S+\.\S+/;
 
-    if (forInput.email === "") {
-      setForInput({
-        ...forInput,
-        emailbc: true,
-        emailht: "Please enter email",
+    if (Input.password === "") {
+      setInput({
+        ...Input,
+        passwordbc: true,
+        passwordht: "Please enter password",
       });
-      document.getElementById("logEmail").focus();
-    } else if (!re.test(forInput.email)) {
-      setForInput({
-        ...forInput,
-        emailbc: true,
-        emailht: "email must contain @ and . symbols",
+      document.getElementById("password").focus();
+    } else if (Input.cpassword === "") {
+      setInput({
+        ...Input,
+        cpasswordbc: true,
+        cpasswordht: "Please confirm password",
       });
-      document.getElementById("logEmail").focus();
+      document.getElementById("cpassword").focus();
+    } else if (!(Input.cpassword === Input.password)) {
+      setInput({
+        ...Input,
+        cpasswordbc: true,
+        cpasswordht: "Password doesn't match!",
+      });
+      document.getElementById("cpassword").focus();
     } else {
-      setForgetting(true);
-      var Api = Connection.api + Connection.forgot;
+      setResetting(true);
+      var Api = Connection.api + Connection.reset;
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
       };
 
       var data = {
-        email: forInput.email,
+        password: Input.password,
+        token: token,
       };
 
       fetch(Api, {
@@ -60,15 +85,15 @@ function Forgotpass() {
       })
         .then((response) => response.json())
         .then((response) => {
-          if (response.message === "Password reset link sent to your email") {
-            setForgetting(false);
+          if (response.message === "Password reset successful") {
+            setResetting(false);
             setResponse({
               ...response,
               status: "success",
               content: response.message,
             });
           } else {
-            setForgetting(false);
+            setResetting(false);
             setResponse({
               ...response,
               status: "error",
@@ -77,12 +102,13 @@ function Forgotpass() {
           }
         })
         .catch((e) => {
+          console.log(e);
+          setResetting(false);
           setResponse({
             ...response,
             status: "error",
-            content: "There is problem Forgeting password. Retry later!",
+            content: "There is problem resetting password. Retry later!",
           });
-          setForgetting(false);
         });
     }
   };
@@ -93,66 +119,65 @@ function Forgotpass() {
         <Row>
           <Col sm={2} className="me-3">
             <img src={Logo} alt="logo" width="90" height="50" />
-          </Col>{" "}
+          </Col>
           <Col sm={2}></Col>
         </Row>
       </Container>
       <Container maxWidth="lg">
         <Grid container spacing={1} className="m-auto my-4">
-          <Grid
-            item
-            xs={12}
-            md={5}
-            className="bg-white  mt-5 py-2 px-auto   border border-1 border-start-0 border-top-0 border-bottom-0"
-          >
-            <>
-              <div className="float-end mt-4">
-                <p className="fs-3 mb-0 pe-3">
-                  Surfie Ethiopia Partners Portal
-                </p>
-                <small className="fs-6 pt-1 float-end mt-0 pe-3 text-muted">
-                  Referre and Earn
-                </small>
-              </div>
-              <img
-                src={Approved}
-                alt="Surfie Ethiopia Partners"
-                style={{
-                  width: "100%",
-                  height: "auto",
-                  maxWidth: "80%",
-                  float: "right",
-                  paddingRight: 3,
-                  marginTop: 20,
-                }}
-              />
-            </>{" "}
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <Container className="mt-5 py-5" id="authcard">
+          <Grid item xs={12} md={12}>
+            <Container className="mt-5 py-2" id="authcard">
               <Row className="d-flex justify-content-center align-items-center p-4 ">
                 <Col className="bg-light border-0 rounded-2 shadow-sm p-4  ">
                   <Row className="d-flex justify-content-between align-items-center ">
                     <Col sm={8} className=" text-start">
-                      <p className="fw-bold fs-3">Forgot Password?</p>
+                      <p className="fw-bold fs-3 text-muted">Reset Password</p>
                     </Col>
                   </Row>
 
-                  <input
-                    type="email"
-                    id="logEmail"
-                    className={
-                      forInput.emailbc
-                        ? "form-control mt-5 border-danger"
-                        : "form-control mt-5"
-                    }
-                    placeholder="Enter your email address"
-                    aria-label="Email Address"
-                    value={forInput.email}
-                    onChange={updateEmail}
-                  />
+                  <div className="input-group mt-3">
+                    <input
+                      type={show ? "text" : "password"}
+                      id="password"
+                      className={
+                        Input.passwordbc
+                          ? "form-control border-danger"
+                          : "form-control "
+                      }
+                      placeholder="Password"
+                      aria-label="Password"
+                      value={Input.password}
+                      onChange={UpdatePass}
+                    />
+                  </div>
                   <small class="form-text mt-0 text-danger">
-                    {forInput.emailht}
+                    {Input.passwordht}
+                  </small>
+                  <div className="input-group mt-3">
+                    <input
+                      type={show ? "text" : "password"}
+                      id="cpassword"
+                      className={
+                        Input.cpasswordbc
+                          ? "form-control border-danger"
+                          : "form-control "
+                      }
+                      placeholder="Confirm Password"
+                      aria-label="Confirm Password"
+                      value={Input.cpassword}
+                      onChange={UpdateCPass}
+                    />
+                    <button
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setShow(!show)}
+                    >
+                      {show ? <BsEye size={18} /> : <BsEyeSlash size={18} />}
+                    </button>
+                  </div>
+
+                  <small class="form-text mt-0 text-danger">
+                    {Input.cpasswordht}
                   </small>
 
                   <button
@@ -161,7 +186,7 @@ function Forgotpass() {
                     className="btn  mt-4 form-control"
                     onClick={() => Forgot()}
                   >
-                    {forgetting ? (
+                    {resetting ? (
                       <div
                         className="spinner-border spinner-border-sm text-light "
                         role="status"
@@ -169,10 +194,9 @@ function Forgotpass() {
                         <span className="visually-hidden">Loading...</span>
                       </div>
                     ) : (
-                      "Forgot Password"
+                      "Reset Password"
                     )}
                   </button>
-
                   <Row className="d-flex justify-content-between align-items-center text-center mt-3">
                     <Col>
                       <NavLink to="/" id="link">
@@ -205,4 +229,4 @@ function Forgotpass() {
   );
 }
 
-export default Forgotpass;
+export default ResetPassword;
