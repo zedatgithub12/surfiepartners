@@ -107,11 +107,11 @@ function Forgotpass() {
           >
             <>
               <div className="float-end mt-4">
-                <p className="fs-3 mb-0 pe-3">
-                  Surfie Ethiopia Partners Portal
+                <p className="fs-3 mb-0 mt-2 pe-3 text-end">
+                  Surfie Ethiopia Partners <br /> Collaboration Portal
                 </p>
                 <small className="fs-6 pt-1 float-end mt-0 pe-3 text-muted">
-                  Referre and Earn
+                  Referre & Earn
                 </small>
               </div>
               <img
@@ -120,7 +120,7 @@ function Forgotpass() {
                 style={{
                   width: "100%",
                   height: "auto",
-                  maxWidth: "80%",
+                  maxWidth: "85%",
                   float: "right",
                   paddingRight: 3,
                   marginTop: 20,

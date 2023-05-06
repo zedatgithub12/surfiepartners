@@ -53,10 +53,7 @@ function Home() {
     accountbc: false,
     accountht: "",
   });
-  const currentDate = new Date();
-  const currentMonth = currentDate.getMonth() + 1;
 
-  const [month, setMonth] = useState(currentMonth);
   const Withdrawals = withdraws ? withdraws.slice(0, 3) : [];
 
   const handleClick = () => {
@@ -86,26 +83,6 @@ function Home() {
     });
   };
 
-  const Status = (status) => {
-    var Status;
-
-    switch (status) {
-      case "1":
-        Status = "Active";
-        break;
-      case "2":
-        Status = "Expired";
-        break;
-
-      case "3":
-        Status = "Terminated";
-        break;
-      default:
-        Status = "Pending";
-    }
-
-    return Status;
-  };
   const DateSlice = (date) => {
     var year = date.slice(0, 4);
     var month = date.slice(5, 7);
@@ -209,7 +186,7 @@ function Home() {
       setLoading(false);
       var Api =
         Connection.api +
-        Connection.customers +
+        Connection.referred +
         user.referralcode +
         `?page=${currentPage}`;
 
@@ -262,8 +239,7 @@ function Home() {
         "Content-Type": "application/json",
       };
       var Data = {
-        month: month,
-        referral: user.referralcode,
+        referral: cards.referralcode,
       };
       fetch(Api, {
         method: "GET",
@@ -272,6 +248,7 @@ function Home() {
       })
         .then((response) => response.json())
         .then((response) => {
+        
           sessionStorage.setItem("balance", JSON.stringify(response.balance));
           sessionStorage.setItem("monthly", JSON.stringify(response.monthly));
           sessionStorage.setItem("referrels", JSON.stringify(response.total));
@@ -282,6 +259,7 @@ function Home() {
     getCustomers();
     getWithdrawals();
     getCardData();
+    
     return () => {};
   }, []);
   return (
@@ -434,21 +412,21 @@ function Home() {
                               <td>{item.phone}</td>
                               <td>{DateSlice(item.created_at)}</td>
                               <td>
-                                {item.status === "1" ? (
-                                  <span class="bg-success  bg-opacity-10 text-success pe-1 px-2 rounded-1">
-                                    {Status(item.status)}
+                                {item.status == 1 ? (
+                                  <span className="bg-success  bg-opacity-10 text-success pe-1 px-2 rounded-1">
+                                    Active
                                   </span>
-                                ) : item.status === "2" ? (
-                                  <span class="badge bg-danger bg-opacity-10 text-danger pe-1 rounded-1">
-                                    {Status(item.status)}
+                                ) : item.status == 2 ? (
+                                  <span className="badge bg-danger bg-opacity-10 text-danger pe-1 px-2 rounded-1">
+                                    Expired
                                   </span>
-                                ) : item.status === "3" ? (
-                                  <span class="badge bg-dark bg-opacity-10 text-dark pe-1 rounded-1">
-                                    {Status(item.status)}
+                                ) : item.status == 3 ? (
+                                  <span className="badge bg-dark bg-opacity-10 text-dark pe-1 px-2 rounded-1">
+                                    Terminated
                                   </span>
                                 ) : (
-                                  <span class="badge bg-secondary bg-opacity-10 text-secondary pe-1 rounded-1">
-                                    {Status(item.status)}
+                                  <span className="badge bg-secondary bg-opacity-10 text-secondary pe-1 px-2 rounded-1">
+                                    Pending
                                   </span>
                                 )}
                               </td>

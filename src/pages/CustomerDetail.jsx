@@ -3,8 +3,10 @@ import Header from "../components/header";
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import Dropdown from "react-bootstrap/Dropdown";
-
-import { BsArrowBarLeft, BsArrowLeftCircle } from "react-icons/bs";
+import { BsArrowBarLeft } from "react-icons/bs";
+import packages from "../data/packages";
+import Channels from "../data/paymentChannels";
+import Connection from "../constants/Connections";
 
 function CustomerDetail() {
   const navigate = useNavigate();
@@ -28,30 +30,11 @@ function CustomerDetail() {
     payment_method:
       customer.payment_method === null ? "" : customer.payment_method,
   });
-  const [pmodal, setPModal] = useState("Telebirr");
+  const [pmodal, setPModal] = useState("1002");
   const [renew, setRenew] = useState(false);
   const [upgrade, setUpgrade] = useState(false);
 
-  const Status = (status) => {
-    var Status;
-
-    switch (status) {
-      case "1":
-        Status = "Active";
-        break;
-      case "2":
-        Status = "Expired";
-        break;
-
-      case "3":
-        Status = "Terminated";
-        break;
-      default:
-        Status = "Pending";
-    }
-
-    return Status;
-  };
+  const choseen = Channels.find((channel) => channel.id === pmodal);
 
   const DateSlice = (date) => {
     var year = date.slice(0, 4);
@@ -95,7 +78,9 @@ function CustomerDetail() {
 
     return gateway;
   };
-
+  const price = packages.find((p) => p.device === user.license)[
+    user.subscription + "_price"
+  ];
   const Renew = () => {
     setUpgrade(false);
     setRenew(!renew);
@@ -106,7 +91,28 @@ function CustomerDetail() {
   };
 
   const ConfirmRenewal = () => {
-    alert("all is well");
+  var Api = Connection.api+Connection.renew+user.id;
+  var headers = {
+    accept: "application/json",
+    "Content-Type":"application/json"
+  };
+var data = {
+  channel: pmodal
+};
+
+fetch(Api,{
+  method: POST,
+  headers: headers,
+  body: JSON.stringify(data)
+})
+.then((response)=>response.json())
+.then((response) => {
+  if (response.status === "success") {
+    window.location.href = response.data.checkout_url;
+  } 
+}).catch((e)=> {
+console.log(e)
+});
   };
 
   useEffect(() => {
@@ -133,21 +139,21 @@ function CustomerDetail() {
             <div className="d-flex justify-content-between align-items-center px-2 bg-light py-2 mt-2 rounded">
               <p className=" my-auto">Status</p>
               <p className="fw-semibold text-muted  my-auto text-capitalize">
-                {user.status === "1" ? (
+                {user.status == 1 ? (
                   <span class="  bg-opacity-10 text-success pe-1 rounded-1">
-                    {Status(user.status)}
+                    Active
                   </span>
-                ) : user.status === "2" ? (
+                ) : user.status == 2 ? (
                   <span class="badge bg-danger bg-opacity-10 text-danger pe-1 rounded-1">
-                    {Status(user.status)}
+                    Expired
                   </span>
-                ) : user.status === "3" ? (
+                ) : user.status == 3 ? (
                   <span class="badge bg-dark bg-opacity-10 text-dark pe-1 rounded-1">
-                    {Status(user.status)}
+                    Terminated
                   </span>
                 ) : (
                   <span class="badge bg-secondary bg-opacity-10 text-secondary pe-1 rounded-1">
-                    {Status(user.status)}
+                    Pending
                   </span>
                 )}
               </p>
@@ -215,7 +221,7 @@ function CustomerDetail() {
               {/* 
               <Button
                 onClick={() => UpgradeSub()}
-                className=" bg-white f small  rounded shadow-sm text-primary mt-3"
+                className=" bg-white  small  rounded shadow-sm text-primary mt-3"
               >
                 Upgrade Subscription
               </Button> */}
@@ -237,7 +243,7 @@ function CustomerDetail() {
                 <div className="d-flex justify-content-between align-items-center px-2  py-2  rounded">
                   <p className=" my-auto">Fee Amount </p>
                   <p className="fw-semibold text-muted  my-auto text-capitalize">
-                    450 ETB
+                    {price} ETB
                   </p>
                 </div>
                 <div className="d-flex justify-content-between align-items-center px-2  py-2  rounded">
@@ -249,26 +255,18 @@ function CustomerDetail() {
                         variant="light"
                         className="border"
                       >
-                        {pmodal}
+                        {choseen.name}
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu variant="light">
-                        <Dropdown.Item
-                          onClick={() => setPModal("Telebirr")}
-                          active
-                        >
-                          Telebirr
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={() => setPModal("Chapa")}>
-                          Chapa
-                        </Dropdown.Item>
-                        <Dropdown.Item onClick={() => setPModal("CBE Birr")}>
-                          CBE Birr
-                        </Dropdown.Item>
-
-                        <Dropdown.Item onClick={() => setPModal("CBE Account")}>
-                          CBE Account
-                        </Dropdown.Item>
+                        {Channels.map((channel) => (
+                          <Dropdown.Item
+                            onClick={() => setPModal(channel.id)}
+                            active
+                          >
+                            {channel.name}
+                          </Dropdown.Item>
+                        ))}
                       </Dropdown.Menu>
                     </Dropdown>
                   </p>

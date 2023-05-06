@@ -42,24 +42,20 @@ function App() {
           setLoged(false);
         }
       },
-
       SignOut: async (status) => {
         if (status === "Signout") {
           sessionStorage.clear();
-
           setLoged(false);
         }
         {
           setLoged(false);
         }
       },
-
       getToken: async () => {
         const tokenString = sessionStorage.getItem("token");
         const userToken = JSON.parse(tokenString);
         return userToken;
       },
-
       getUser: async () => {
         const userString = sessionStorage.getItem("user");
         const userDetails = JSON.parse(userString);
@@ -71,7 +67,6 @@ function App() {
 
   useEffect(() => {
     var tokens = sessionStorage.getItem("token");
-
     if (tokens !== null) {
       setLoged(true);
     }
@@ -90,14 +85,20 @@ function App() {
               <Route path="/profile" element={<Profiledetail />} />
               <Route path="/withdrawals" element={<Withdrawals />} />
               <Route path="/forgotpass" element={<Forgotpass />} />
-              <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
+              />
             </Routes>
           ) : (
             <Routes>
               <Route path="/" element={<Auth />} />
               <Route path="/Auth" element={<Auth />} />
               <Route path="/forgotpass" element={<Forgotpass />} />
-              <Route path="/reset-password/:token" element={<ResetPassword />} />
+              <Route
+                path="/reset-password/:token"
+                element={<ResetPassword />}
+              />
             </Routes>
           )}
         </Router>

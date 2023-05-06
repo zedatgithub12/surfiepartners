@@ -433,8 +433,8 @@ function Auth() {
           >
             <>
               <div className="float-end mt-4 pt-2">
-                <p className="fs-3 mb-0 pe-3">
-                  Surfie Ethiopia Partners Portal
+                <p className="fs-3 mb-0 pe-3 text-end">
+                  Surfie Ethiopia Partners <br /> Collaboration Portal
                 </p>
                 <small className="fs-6 pt-1 float-end mt-0 pe-3 text-muted">
                   Referre & Earn

@@ -5,9 +5,11 @@ const Connection = {
   remote: "https://surfie.puresight.com/cgi-bin/ProvisionAPI/",
   register: "/pregister",
   login: "/partnerlogin",
-  customers: "/referred/",
+  customers: "/customers",
 
   chapaResponse: "/chapa", //payment gateways
+  referred: "/referred/",
+  renew: "/renewal/",
   requestWithdrawal: "/withdraw",
   withdrawals: "/withdrawals/",
   updateprofile: "/update/",

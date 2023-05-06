@@ -23,6 +23,7 @@ import Modal from "react-bootstrap/Modal";
 import Header from "../components/header";
 import { BsArrowBarLeft } from "react-icons/bs";
 import { AuthContext } from "../context/Context";
+import packages from "../data/packages";
 
 function CreateAccount() {
   const userinfo = sessionStorage.getItem("user");
@@ -822,25 +823,19 @@ function CreateAccount() {
                                     >
                                       Select License
                                     </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setLicense(5)}
-                                    >
-                                      5 License
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setLicense(10)}
-                                    >
-                                      10 License
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setLicense(15)}
-                                    >
-                                      15 License
-                                    </Dropdown.Item>
+
+                                    {packages.map((license) => (
+                                      <Dropdown.Item
+                                        onClick={() =>
+                                          setLicense(license.device)
+                                        }
+                                      >
+                                        {license.device} License
+                                      </Dropdown.Item>
+                                    ))}
                                   </Dropdown.Menu>
                                 </Dropdown>
                                 <p className="small text-danger fw-semibold">
-                                  {" "}
                                   {input.licenseht}
                                 </p>
                               </MDBCol>
