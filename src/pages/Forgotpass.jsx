@@ -126,7 +126,7 @@ function Forgotpass() {
                   marginTop: 20,
                 }}
               />
-            </>{" "}
+            </>
           </Grid>
           <Grid item xs={12} md={6}>
             <Container className="mt-5 py-5" id="authcard">

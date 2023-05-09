@@ -91,28 +91,29 @@ function CustomerDetail() {
   };
 
   const ConfirmRenewal = () => {
-  var Api = Connection.api+Connection.renew+user.id;
-  var headers = {
-    accept: "application/json",
-    "Content-Type":"application/json"
-  };
-var data = {
-  channel: pmodal
-};
+    var Api = Connection.api + Connection.renew + user.id;
+    var headers = {
+      accept: "application/json",
+      "Content-Type": "application/json",
+    };
+    var data = {
+      channel: pmodal,
+    };
 
-fetch(Api,{
-  method: POST,
-  headers: headers,
-  body: JSON.stringify(data)
-})
-.then((response)=>response.json())
-.then((response) => {
-  if (response.status === "success") {
-    window.location.href = response.data.checkout_url;
-  } 
-}).catch((e)=> {
-console.log(e)
-});
+    fetch(Api, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.status === "success") {
+          window.location.href = response.data.checkout_url;
+        }
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
 
   useEffect(() => {
