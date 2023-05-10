@@ -5,24 +5,24 @@ jobs:
     name: 🎉 Deploy
     runs-on: ubuntu-latest
     steps:
-    - name: 🚚 Get latest code
-      uses: actions/checkout@v3
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v3
 
-    - name: Use Node.js 16.14.0
-      uses: actions/setup-node@v2
-      with:
-        node-version: '16.14.0'
-      
-    - name: 🔨 Build Project
-      run: |
-        npm install
-        npm run build
-        
-    - name: 📂 Sync files
-      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
-      with:
-        server: ${{ secrets.ftp_server }}
-        username: ${{ secrets.ftp_username }}
-        password: ${{ secrets.ftp_password }}
-        dangerous-clean-slate: true
-        local-dir: ./build/
+      - name: Use Node.js 16.14.0
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16.14.0"
+
+      - name: 🔨 Build Project
+        run: |
+          npm install
+          npm run build
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.ftp_server }}
+          username: ${{ secrets.ftp_username }}
+          password: ${{ secrets.ftp_password }}
+          dangerous-clean-slate: true
+          local-dir: ./build/
