@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/header";
-import { Container, Row, Col, Button } from "react-bootstrap";
+import { Container, Row, Col } from "react-bootstrap";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import Dropdown from "react-bootstrap/Dropdown";
 import { BsArrowBarLeft } from "react-icons/bs";
 import packages from "../data/packages";
 import Channels from "../data/paymentChannels";
 import Connection from "../constants/Connections";
+import { Button, Snackbar } from "@mui/material";
+import MuiAlert from "@mui/material/Alert";
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function CustomerDetail() {
   const navigate = useNavigate();
@@ -15,7 +21,7 @@ function CustomerDetail() {
   };
   const { state } = useLocation();
   const customer = state == null ? "" : state;
-  const [user, setUser] = useState({
+  const [user] = useState({
     fname: customer.first_name === null ? "" : customer.first_name,
     mname: customer.middle_name === null ? "" : customer.middle_name,
     lname: customer.lname === null ? "" : customer.lname,
@@ -30,12 +36,24 @@ function CustomerDetail() {
     payment_method:
       customer.payment_method === null ? "" : customer.payment_method,
   });
-  const [pmodal, setPModal] = useState("1002");
+  const [pmodal, setPModal] = useState("1001");
   const [renew, setRenew] = useState(false);
-  const [upgrade, setUpgrade] = useState(false);
+  const [renewLoader, setRenewLoader] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [responseMsg, setResponseMsg] = useState({
+    severity: "success",
+    content: "",
+    status: false,
+  });
+  //handles a snackbar close function
+  const handleSnackClose = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setOpen(false);
+  };
 
   const choseen = Channels.find((channel) => channel.id === pmodal);
-
   const DateSlice = (date) => {
     var year = date.slice(0, 4);
     var month = date.slice(5, 7);
@@ -55,13 +73,11 @@ function CustomerDetail() {
       var day = date.slice(8, 10);
       duedate = day + "/" + month + "/" + year;
     }
-
     return duedate;
   };
 
   const Payment = (mode) => {
     var gateway;
-
     switch (mode) {
       case 1000:
         gateway = "With Cash";
@@ -82,24 +98,24 @@ function CustomerDetail() {
     user.subscription + "_price"
   ];
   const Renew = () => {
-    setUpgrade(false);
     setRenew(!renew);
   };
-  const UpgradeSub = () => {
-    setRenew(false);
-    setUpgrade(true);
-  };
+  // const UpgradeSub = () => {
+  //   setRenew(false);
+  //   setUpgrade(true);
+  // };
 
-  const ConfirmRenewal = () => {
-    var Api = Connection.api + Connection.renew + user.id;
+  const handleRenewal = () => {
+    setRenewLoader(true);
+    var Api = Connection.api + Connection.renew + customer.id;
     var headers = {
       accept: "application/json",
       "Content-Type": "application/json",
     };
     var data = {
+      id: customer.id,
       channel: pmodal,
     };
-
     fetch(Api, {
       method: "POST",
       headers: headers,
@@ -107,15 +123,38 @@ function CustomerDetail() {
     })
       .then((response) => response.json())
       .then((response) => {
-        if (response.status === "success") {
-          window.location.href = response.data.checkout_url;
+        if (response.original.status === "success") {
+          setRenewLoader(false);
+          setResponseMsg({
+            ...responseMsg,
+            severity: "info",
+            content: "Redirecting to payment gateway...",
+            status: true,
+          });
+          setOpen(true);
+          window.location.href = response.original.data.checkout_url;
+        } else {
+          setRenewLoader(false);
+          setResponseMsg({
+            ...responseMsg,
+            severity: "error",
+            content: "We couldn't renew your license for now retry later ",
+            status: true,
+          });
+          setOpen(true);
         }
       })
       .catch((e) => {
-        console.log(e);
+        setRenewLoader(false);
+        setResponseMsg({
+          ...responseMsg,
+          severity: "error",
+          content: "There is error renewing your license",
+          status: true,
+        });
+        setOpen(true);
       });
   };
-
   useEffect(() => {
     return () => {};
   }, []);
@@ -276,9 +315,16 @@ function CustomerDetail() {
                   type="button"
                   id="primarybtn"
                   className="btn  mt-4 form-control"
-                  onClick={() => ConfirmRenewal()}
+                  onClick={() => handleRenewal()}
                 >
-                  Renew
+                  {renewLoader ? (
+                    <div
+                      class="spinner-border spinner-border-sm text-white"
+                      role="status"
+                    ></div>
+                  ) : (
+                    <span>Renew</span>
+                  )}
                 </button>
               </div>
             ) : null}
@@ -295,6 +341,15 @@ function CustomerDetail() {
           </Row>
         </Row>
       </Container>
+      <Snackbar open={open} autoHideDuration={6000} onClose={handleSnackClose}>
+        <Alert
+          onClose={handleSnackClose}
+          severity={responseMsg.severity}
+          sx={{ width: "100%" }}
+        >
+          {responseMsg.content}
+        </Alert>
+      </Snackbar>
     </>
   );
 }
