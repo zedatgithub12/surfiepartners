@@ -688,7 +688,7 @@ function CreateAccount() {
                                   }
                                 />
                                 <p className="small text-danger fw-semibold">
-                                  {" "}
+                                  
                                   {input.phoneht}
                                 </p>
                               </MDBCol>
@@ -992,7 +992,6 @@ function CreateAccount() {
                               ))}
                             </div>
                             <p className="small text-danger fw-semibold text-center">
-                              {" "}
                               {input.paymentmht}
                             </p>
                           </MDBRow>
