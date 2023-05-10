@@ -1,6 +1,7 @@
 {
   "name": "surfiepartners",
   "private": true,
+  "homepage": "https://partners.surfieethiopia.com/",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
