@@ -422,10 +422,11 @@ function Profiledetail() {
               <Col className="pt-3">
                 <div className="d-flex justify-content-between align-items-center p-3   mt-0 bg-warning rounded-3 shadow-sm text-muted fw-semibold">
                   <div>
-                    <small>Referral code</small> <br />
                     <span className="fs-4 fw-semibold text-dark">
                       {cards.referralcode}
                     </span>
+                    <br />
+                    <small>Referral code</small>
                   </div>
 
                   <IoMdShare size={30} />
