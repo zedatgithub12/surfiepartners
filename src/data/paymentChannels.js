@@ -1,5 +1,5 @@
 import chapa from "../assets/chapa.png";
-import telebirr from "../assets/telebirr.png";
+// import telebirr from "../assets/telebirr.png";
 
 const Channels = [
   {
