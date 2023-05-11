@@ -53,7 +53,6 @@ function CustomerDetail() {
     setOpen(false);
   };
 
-  const choseen = Channels.find((channel) => channel.id === pmodal);
   const DateSlice = (date) => {
     var year = date.slice(0, 4);
     var month = date.slice(5, 7);
@@ -295,7 +294,7 @@ function CustomerDetail() {
                         variant="light"
                         className="border"
                       >
-                        {choseen.name}
+                        {pmodal.name}
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu variant="light">
