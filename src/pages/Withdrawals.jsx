@@ -81,7 +81,7 @@ function Withdrawals() {
             </div>
             <div className="d-flex justify-content-between align-items-center ">
               <p>Account Number</p>{" "}
-              <p className="fw-semibold text-muted">{detail.accountNo}</p>
+              <p className="fw-semibold text-muted">{detail.accountno}</p>
             </div>
             <div className="d-flex justify-content-between align-items-center ">
               <p>Proccessed Date</p>{" "}

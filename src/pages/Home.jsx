@@ -15,6 +15,7 @@ import { GrFormClose } from "react-icons/gr";
 import Snackbar from "@mui/material/Snackbar";
 import Connection from "../constants/Connections";
 import Footer from "../components/footer";
+import { Typography } from "@mui/material";
 
 function Home() {
   const navigate = useNavigate();
@@ -51,6 +52,9 @@ function Home() {
     account: "",
     accountbc: false,
     accountht: "",
+
+    status: false,
+    reshelper: "",
   });
 
   const Withdrawals = withdraws ? withdraws.slice(0, 3) : [];
@@ -115,7 +119,6 @@ function Home() {
     if (withdrawal.amount === "") {
       setWithdrawal({
         ...withdrawal,
-
         amountbc: true,
         amountht: "Please Enter Amount",
       });
@@ -123,12 +126,11 @@ function Home() {
     } else if (user.balance < 50) {
       setWithdrawal({
         ...withdrawal,
-
         amountht:
           "To request withdrawal your balance must be greater than 50 ETB!",
       });
       document.getElementById("amount").focus();
-    } else if (withdrawal.amount > user.balance) {
+    } else if (withdrawal.amount > cards.balance) {
       setWithdrawal({
         ...withdrawal,
         amountbc: true,
@@ -166,7 +168,11 @@ function Home() {
         .then((response) => {
           if (response === "succeed") {
             setWithLoading(false);
-            console.log(response);
+            setWithdrawal({
+              ...withdrawal,
+              status: true,
+              reshelper: "Successfully Requested",
+            });
           } else {
             setWithLoading(false);
           }
@@ -268,7 +274,7 @@ function Home() {
                   {cards.balance}
                 </span>
                 <br />
-                <small>Current Balance</small>
+                <Typography>Current Balance</Typography>
               </div>
               <FaWallet size={28} className="money-color" />
             </div>
@@ -286,7 +292,7 @@ function Home() {
                   ) : null}
                 </span>
                 <br />
-                <small>Referred Customers</small>
+                <Typography>Referred Customers</Typography>
               </div>
               <IoIosPeople size={32} className="primary-text" />
             </div>
@@ -298,7 +304,7 @@ function Home() {
                   {cards.referralcode}
                 </span>
                 <br />
-                <small>Referral code</small>
+                <Typography>Referral code</Typography>
               </div>
               <IconButton
                 aria-label="delete"
@@ -485,7 +491,7 @@ function Home() {
               Add Customer
             </NavLink>
             <br />
-            {Withdrwals.length == 0 ? (
+            {Withdrawals.length < 3 ? (
               <NavLink
                 onClick={() => setWithModal(!withmodal)}
                 className="money-color my-auto fw-semibold mt-2 pt-2"
@@ -499,7 +505,7 @@ function Home() {
                 <p className="fw-semibold fs-6">Payment Details</p>
                 <div className="d-flex justify-content-between align-items-center ">
                   <p className="">Requested Date</p>
-                  <p className="fw-semibold text-muted">{detail.date}</p>
+                  <p className="fw-semibold text-muted">{detail.issueddate}</p>
                 </div>
                 <div className="d-flex justify-content-between align-items-center ">
                   <p>Amount</p>
@@ -511,17 +517,17 @@ function Home() {
                 </div>
                 <div className="d-flex justify-content-between align-items-center ">
                   <p>Account Number</p>
-                  <p className="fw-semibold text-muted">{detail.accountNo}</p>
+                  <p className="fw-semibold text-muted">{detail.accountno}</p>
                 </div>
                 <div className="d-flex justify-content-between align-items-center ">
                   <p>Proccessed Date</p>
-                  <p className="fw-semibold text-muted">{detail.pdate}</p>
+                  <p className="fw-semibold text-muted">{detail.proccessed}</p>
                 </div>
               </div>
             ) : null}
 
             {withmodal ? (
-              <div className=" shadow-sm border rounded  p-3  mb-5">
+              <div className=" align-items-center justify-content-center shadow-sm border rounded  p-3  mb-5">
                 <button
                   onClick={() => setWithModal(false)}
                   className="bg-light bg-opacity-25 fw-bold p-3 py-1 rounded float-end position-absolute top-0 end-0 m-2"
@@ -594,7 +600,7 @@ function Home() {
                   type="button"
                   disabled={withloading ? true : false}
                   id="primarybtn"
-                  className="btn  mt-4 form-control  w-75 ms-3 mb-3"
+                  className="btn  mt-4 form-control  w-75  mb-3"
                   onClick={() => ConfirmPayout()}
                 >
                   {withloading ? (
@@ -609,10 +615,17 @@ function Home() {
                   )}
                 </button>
                 <br />
-                <p class="form-text  text-muted mx-3 mt-1  px-4 caption">
+
+                <p class="form-text  text-muted  mt-1  px-4 caption">
                   Your user Information will be used to process the payment Make
                   sure you have provided account information of yourself
                 </p>
+
+                {withdrawal.status ? (
+                  <Typography class="form-text small text-success bg-success bg-opacity-10 rounded mx-3 ms-4 w-75 p-2 px-4 text-center ">
+                    {withdrawal.reshelper}
+                  </Typography>
+                ) : null}
               </div>
             ) : null}
           </Col>
