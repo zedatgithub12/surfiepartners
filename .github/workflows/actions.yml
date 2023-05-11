@@ -19,7 +19,7 @@ jobs:
           npm run build
 
       - name: 📂 Sync files
-        uses: JamesIves/github-pages-deploy-action@4.1.3
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
           server: ${{ secrets.ftp_server }}
           username: ${{ secrets.ftp_username }}
