@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [react()],
   build: {
     outDir: "build",
-    minify: "terser",
+    minify: false,
     target: "es2018",
     publicDir: "https://partners.surfieethiopia.com/",
     sourcemap: true,

@@ -4,11 +4,11 @@ import { Container, Row, Col } from "react-bootstrap";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import Dropdown from "react-bootstrap/Dropdown";
 import { BsArrowBarLeft } from "react-icons/bs";
-import packages from "../data/packages";
 import Channels from "../data/paymentChannels";
 import Connection from "../constants/Connections";
 import { Button, Snackbar } from "@mui/material";
 import MuiAlert from "@mui/material/Alert";
+import packages from "../data/packages";
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
@@ -21,12 +21,13 @@ function CustomerDetail() {
   };
   const { state } = useLocation();
   const customer = state == null ? "" : state;
+
   const [user] = useState({
     fname: customer.first_name === null ? "" : customer.first_name,
     mname: customer.middle_name === null ? "" : customer.middle_name,
     lname: customer.lname === null ? "" : customer.lname,
-    status: customer.status === null ? "" : customer.status,
-    license: customer.license === null ? "" : customer.license,
+    status: customer.status === null ? "" : parseInt(customer.status),
+    license: customer.license === null ? "" : parseInt(customer.license),
     subscription: customer.subscription === null ? "" : customer.subscription,
     duedate: customer.duedate === null ? "" : customer.duedate,
     email: customer.email === null ? "" : customer.email,
@@ -45,6 +46,12 @@ function CustomerDetail() {
     content: "",
     status: false,
   });
+  console.log(pmodal);
+  const device = packages.find((license) => license.device === user.license);
+  const price = device[user.subscription + "_price"];
+
+  const choseen = Channels.find((channel) => channel.id === pmodal);
+
   //handles a snackbar close function
   const handleSnackClose = (event, reason) => {
     if (reason === "clickaway") {
@@ -93,9 +100,10 @@ function CustomerDetail() {
 
     return gateway;
   };
-  const price = packages.find((p) => p.device === user.license)[
-    user.subscription + "_price"
-  ];
+  // const price = packages.find((license) => license.device === user.license)[
+  //   user.subscription + "_price"
+  // ];
+
   const Renew = () => {
     setRenew(!renew);
   };
@@ -294,7 +302,7 @@ function CustomerDetail() {
                         variant="light"
                         className="border"
                       >
-                        {pmodal.name}
+                        {choseen.name}
                       </Dropdown.Toggle>
 
                       <Dropdown.Menu variant="light">
