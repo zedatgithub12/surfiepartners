@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col } from "react-bootstrap";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -182,8 +184,8 @@ function Home() {
     }
   };
 
-// eslint-disable-next-line
-useEffect(() => {
+  // eslint-disable-next-line
+  useEffect(() => {
     //get referred customer list
     const getCustomers = async (currentPage) => {
       setLoading(true);
