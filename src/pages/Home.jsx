@@ -182,7 +182,8 @@ function Home() {
     }
   };
 
-  useEffect(() => {
+// eslint-disable-next-line
+useEffect(() => {
     //get referred customer list
     const getCustomers = async (currentPage) => {
       setLoading(true);

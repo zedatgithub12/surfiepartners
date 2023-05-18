@@ -15,22 +15,9 @@ import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   const [loged, setLoged] = useState(false);
-  const [user] = useState({
-    fname: "",
-    mname: "",
-    lname: "",
-    email: "",
-    phone: "",
-    organization: "",
-    referralcode: "",
-    balance: "0",
-    noreferral: "0",
-    status: "",
-  });
 
   const authContext = useMemo(
     () => ({
-     
       SignIn: async (status, users) => {
         if (status === "Signed") {
           sessionStorage.setItem("user", JSON.stringify(users));
