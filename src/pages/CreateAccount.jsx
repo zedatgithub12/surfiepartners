@@ -42,6 +42,7 @@ function CreateAccount() {
   const Goback = () => {
     navigate(-1);
   };
+
   const [input, setInput] = useState({
     firstname: "",
     firsths: false,
@@ -99,6 +100,7 @@ function CreateAccount() {
 
     errormessage: "",
   });
+
   const [coupon, setCoupon] = useState("");
   const [couponprops, setCouponProps] = useState({
     errormsg: "",
@@ -239,7 +241,20 @@ function CreateAccount() {
     return Phoneno;
   };
 
-  const ApplyCoupon = () => {
+  const getCsrfToken = async () => {
+    var Api = Connection.api;
+    const response = await fetch(Api + "/sanctum/csrf-cookie", {
+      method: "GET",
+      credentials: "include", // Include cookies in the request
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data.csrf_token;
+    }
+    throw new Error("Failed to retrieve CSRF token");
+  };
+
+  const ApplyCoupon = async () => {
     setCouponProps({
       ...couponprops,
       loading: true,
@@ -268,9 +283,12 @@ function CreateAccount() {
       });
 
       var Api = Connection.api + Connection.coupon + coupon;
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
 
       var data = {
@@ -279,6 +297,7 @@ function CreateAccount() {
 
       fetch(Api, {
         method: "POST",
+        credentials: "include",
         headers: headers,
         body: JSON.stringify(data),
       })
@@ -312,8 +331,9 @@ function CreateAccount() {
         });
     }
   };
+
   //validate user input when user pressed submit button
-  const CreateCAccount = () => {
+  const CreateCAccount = async () => {
     var packages = `AFROMINA_${license}`; //packages id to be sent to puresight
     const re = /\S+@\S+\.\S+/;
 
@@ -408,9 +428,12 @@ function CreateAccount() {
     } else {
       setLoading(true);
       var Api = Connection.api + Connection.customers; // update this line of code to the something like 'http://localhost:3000/customers?_page=${currentPage}&_limit=${limit}
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
       const data = {
         firstname: input.firstname,
@@ -432,6 +455,7 @@ function CreateAccount() {
 
       fetch(Api, {
         method: "POST",
+        credentials: "include",
         headers: headers,
         body: JSON.stringify(data),
       })
@@ -501,6 +525,7 @@ function CreateAccount() {
     return true;
   };
 
+  
   return (
     <div
       style={{ backgroundColor: "var(--bg-color)", color: "var(--text-color)" }}
@@ -688,7 +713,6 @@ function CreateAccount() {
                                   }
                                 />
                                 <p className="small text-danger fw-semibold">
-                                  
                                   {input.phoneht}
                                 </p>
                               </MDBCol>

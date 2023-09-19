@@ -125,6 +125,7 @@ function Profiledetail() {
       organizationht: "",
     });
   };
+
   const validateForm = () => {
     let isValid = true;
 
@@ -174,14 +175,30 @@ function Profiledetail() {
     return isValid;
   };
 
-  const handleSubmit = (e) => {
+  const getCsrfToken = async () => {
+    var Api = Connection.api;
+    const response = await fetch(Api + "/sanctum/csrf-cookie", {
+      method: "GET",
+      credentials: "include", // Include cookies in the request
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data.csrf_token;
+    }
+    throw new Error("Failed to retrieve CSRF token");
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       setUpdating(true);
       var Api = Connection.api + Connection.updateprofile + user.id;
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
       var Data = {
         fname: profile.fname,
@@ -193,6 +210,7 @@ function Profiledetail() {
 
       fetch(Api, {
         method: "PUT",
+        credentials: "include",
         headers: headers,
         body: JSON.stringify(Data),
       })
@@ -282,7 +300,7 @@ function Profiledetail() {
     }
   };
 
-  const SubmitChange = () => {
+  const SubmitChange = async () => {
     if (state.oldpassword === "") {
       setState({
         ...state,
@@ -328,9 +346,12 @@ function Profiledetail() {
 
       setChanging(true);
       var Api = Connection.api + Connection.changepassword + user.id;
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
       var Data = {
         oldpass: state.oldpassword,
@@ -339,6 +360,7 @@ function Profiledetail() {
 
       fetch(Api, {
         method: "PUT",
+        credentials: "include",
         headers: headers,
         body: JSON.stringify(Data),
       })
