@@ -46,7 +46,7 @@ function CustomerDetail() {
     content: "",
     status: false,
   });
-  console.log(pmodal);
+
   const device = packages.find((license) => license.device === user.license);
   const price = device[user.subscription + "_price"];
 
@@ -112,12 +112,28 @@ function CustomerDetail() {
   //   setUpgrade(true);
   // };
 
-  const handleRenewal = () => {
+  const getCsrfToken = async () => {
+    var Api = Connection.api;
+    const response = await fetch(Api + "/sanctum/csrf-cookie", {
+      method: "GET",
+      credentials: "include", // Include cookies in the request
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data.csrf_token;
+    }
+    throw new Error("Failed to retrieve CSRF token");
+  };
+
+  const handleRenewal = async () => {
     setRenewLoader(true);
     var Api = Connection.api + Connection.renew + customer.id;
+
+    const token = await getCsrfToken();
     var headers = {
       accept: "application/json",
       "Content-Type": "application/json",
+      "X-CSRF-TOKEN": token,
     };
     var data = {
       id: customer.id,
@@ -125,6 +141,7 @@ function CustomerDetail() {
     };
     fetch(Api, {
       method: "POST",
+      credentials: "include",
       headers: headers,
       body: JSON.stringify(data),
     })

@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import Footer from "../components/footer";
+import { useEffect } from "react";
 
 const label = { inputProps: { "aria-label": "Checkbox demo" } };
 const Alert = React.forwardRef(function Alert(props, ref) {
@@ -153,7 +154,20 @@ function Auth() {
     });
   };
 
-  const CreateAccount = () => {
+  const getCsrfToken = async () => {
+    var Api = Connection.api;
+    const response = await fetch(Api + "/sanctum/csrf-cookie", {
+      method: "GET",
+      credentials: "include", // Include cookies in the request
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data.csrf_token;
+    }
+    throw new Error("Failed to retrieve CSRF token");
+  };
+
+  const CreateAccount = async () => {
     const re = /\S+@\S+\.\S+/;
     const phonereg = /^[0-9+]*$/;
 
@@ -238,9 +252,13 @@ function Auth() {
       setRegSpinner(true);
       //the api call to the backend of the system will be made from here!
       var Api = Connection.api + Connection.register;
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        SameSite: "None",
+        "X-CSRF-TOKEN": token,
       };
 
       var data = {
@@ -255,6 +273,7 @@ function Auth() {
 
       fetch(Api, {
         method: "POST",
+        credentials: "include",
         headers: headers,
         body: JSON.stringify(data),
       })
@@ -330,7 +349,7 @@ function Auth() {
     });
   };
 
-  const Login = () => {
+  const Login = async () => {
     const re = /\S+@\S+\.\S+/;
     if (logInput.email === "") {
       setLogInput({
@@ -357,9 +376,12 @@ function Auth() {
       setLogSpinner(true);
       //the api call to the backend of the system will be made from here!
       var Api = Connection.api + Connection.login;
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
 
       var data = {
@@ -369,6 +391,7 @@ function Auth() {
 
       fetch(Api, {
         method: "POST",
+        credentials: "include",
         headers: headers,
         body: JSON.stringify(data),
       })
@@ -405,13 +428,15 @@ function Auth() {
 
   // the axios methos imported from AuthUser Function inside the component folder
 
-  const [loading, setLoading] = useState(false);
-
   //server reponse states
   const [serverresponse, setServerResponse] = useState({
     showres: false,
     errorMsg: "",
   });
+
+  useEffect(() => {
+    return () => {};
+  }, []);
 
   return (
     <>

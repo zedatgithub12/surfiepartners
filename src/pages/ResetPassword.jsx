@@ -41,7 +41,21 @@ function ResetPassword() {
       cpasswordht: "",
     });
   };
-  const Forgot = () => {
+
+  const getCsrfToken = async () => {
+    var Api = Connection.api;
+    const response = await fetch(Api + "/sanctum/csrf-cookie", {
+      method: "GET",
+      credentials: "include", // Include cookies in the request
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data.csrf_token;
+    }
+    throw new Error("Failed to retrieve CSRF token");
+  };
+
+  const Forgot = async () => {
     const re = /\S+@\S+\.\S+/;
 
     if (Input.password === "") {
@@ -68,9 +82,12 @@ function ResetPassword() {
     } else {
       setResetting(true);
       var Api = Connection.api + Connection.reset;
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
 
       var data = {
@@ -80,6 +97,7 @@ function ResetPassword() {
 
       fetch(Api, {
         method: "POST",
+        credentials: "include",
         headers: headers,
         body: JSON.stringify(data),
       })

@@ -21,14 +21,14 @@ function Home() {
   const navigate = useNavigate();
 
   const balance = sessionStorage.getItem("balance");
-  const yourbalance = JSON.parse(balance);
+  const yourbalance = balance && JSON.parse(balance);
   const referral = sessionStorage.getItem("referrels");
-  const yourreferral = JSON.parse(referral);
+  const yourreferral = referral && JSON.parse(referral);
   const monthlyref = sessionStorage.getItem("monthly");
-  const monthlycount = JSON.parse(monthlyref);
+  const monthlycount = monthlyref && JSON.parse(monthlyref);
   const [monthly, setMonthly] = useState(monthlycount);
   const userinfo = sessionStorage.getItem("user");
-  const user = JSON.parse(userinfo);
+  const user = userinfo && JSON.parse(userinfo);
   const [paging, setPaging] = useState([]);
   const [withmodal, setWithModal] = useState(false);
   const [pmodal, setPModal] = useState("Telebirr");
@@ -115,7 +115,21 @@ function Home() {
       </IconButton>
     </React.Fragment>
   );
-  const ConfirmPayout = () => {
+
+  const getCsrfToken = async () => {
+    var Api = Connection.api;
+    const response = await fetch(Api + "/sanctum/csrf-cookie", {
+      method: "GET",
+      credentials: "include", // Include cookies in the request
+    });
+    if (response.ok) {
+      const data = await response.json();
+      return data.csrf_token;
+    }
+    throw new Error("Failed to retrieve CSRF token");
+  };
+
+  const ConfirmPayout = async () => {
     if (withdrawal.amount === "") {
       setWithdrawal({
         ...withdrawal,
@@ -148,9 +162,12 @@ function Home() {
     } else {
       setWithLoading(true);
       var Api = Connection.api + Connection.requestWithdrawal;
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
       var Data = {
         partnerid: user.id,
@@ -161,6 +178,7 @@ function Home() {
 
       fetch(Api, {
         method: "POST",
+        credentials: "include",
         headers: headers,
         body: JSON.stringify(Data),
       })
@@ -193,13 +211,16 @@ function Home() {
         user.referralcode +
         `?page=${currentPage}`;
 
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
 
       fetch(Api, {
         method: "GET",
+        credentials: "include",
         headers: headers,
       })
         .then((response) => response.json())
@@ -214,15 +235,19 @@ function Home() {
     };
 
     //fetch list of withdrawals
-    const getWithdrawals = () => {
+    const getWithdrawals = async () => {
       var Api = Connection.api + Connection.withdrawals + user.id;
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
 
       fetch(Api, {
         method: "GET",
+        credentials: "include",
         headers: headers,
       })
         .then((response) => response.json())
@@ -231,17 +256,21 @@ function Home() {
         })
         .catch((e) => {});
     };
-    const getCardData = () => {
+    const getCardData = async () => {
       var Api = Connection.api + Connection.carddata + user.id;
+
+      const token = await getCsrfToken();
       var headers = {
         accept: "application/json",
         "Content-Type": "application/json",
+        "X-CSRF-TOKEN": token,
       };
       var Data = {
         referral: cards.referralcode,
       };
       fetch(Api, {
         method: "GET",
+        credentials: "include",
         headers: headers,
         body: JSON.stringify(Data),
       })
